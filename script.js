@@ -163,6 +163,7 @@ canvas.addEventListener('click', function(event) {
                 if(checkContraints(event.offsetX, event.offsetY)){
                     human[idCurrentMember].x = event.offsetX
                     human[idCurrentMember].y = event.offsetY
+                    centreDeGravite()
                 }
                 selected = false
             }
@@ -191,3 +192,28 @@ function distanceBody(x,y){
 curseur.addEventListener("change", function(e) {
     renderWall()
 }); 
+
+function intersection(){
+    let Denom = (human[0].x - human[2].x)*(human[1].y-human[3].y) - (human[0].y - human[2].y)*(human[1].x-human[3].x)
+    if (Denom !=0){
+        let xNum = (human[0].x*human[2].y - human[0].y*human[2].x)*(human[1].x - human[3].x) - (human[0].x - human[2].x)*(human[1].x*human[3].y - human[1].y*human[3].x)
+        let yNum = (human[0].x*human[2].y - human[0].y*human[2].x)*(human[1].y - human[3].y) - (human[0].y - human[2].y)*(human[1].x*human[3].y - human[1].y*human[3].x)
+        human[4].x = xNum/Denom
+        human[4].y = yNum/Denom
+    }
+}
+
+function centreSegment(x1,x2,y1,y2){
+    let xi = (x1+x2)/2
+    let yi = (y1+y2)/2
+    return [xi,yi]
+}
+
+function centreDeGravite(){
+    c1 = centreSegment(human[0].x, human[1].x,human[0].y, human[1].y)
+    c2 = centreSegment(human[2].x, human[3].x,human[2].y, human[3].y)
+    gravite = centreSegment(c1[0],c2[0],c1[1], c2[1])
+    human[4].x = gravite[0]
+    human[4].y = gravite[1]
+    console.log(human[4])
+}
