@@ -1,8 +1,22 @@
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
+const curseur = document.getElementById('dist');
 
 canvas.width = window.innerWidth - canvas.offsetLeft;
-canvas.height = window.innerHeight;
+canvas.height = window.innerHeight-50;
+canvas.style.position = 'absolute';
+canvas.style.top = 50 + 'px';
+canvas.style.left = 0 + 'px';
+
+function drawLineDist(){
+    ctx.beginPath()
+    ctx.moveTo(10, 10)
+    dist = 10 + parseInt(curseur.value)
+    ctx.lineTo(dist, 10)
+    ctx.stroke()
+}
+
+drawLineDist()
 
 let moved = false
 let isBody = false
@@ -17,8 +31,8 @@ class pos{
 let human = [
     new pos(center-70, canvas.height-120),
     new pos(center+70, canvas.height-120),
-    new pos(center-50, canvas.height-20),
     new pos(center+50, canvas.height-20),
+    new pos(center-50, canvas.height-20),
     new pos(center, canvas.height-100)
 ]
 
@@ -80,6 +94,7 @@ function getRandomInt(min, max) {
 
 function renderWall(){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawLineDist()
     for (const circle of circles){
         ctx.fill(circle);
     }
@@ -145,11 +160,34 @@ canvas.addEventListener('click', function(event) {
     if (!found && selected){
         for (const circle of circles){
             if (ctx.isPointInPath(circle, event.offsetX, event.offsetY)) {
-                human[idCurrentMember].x = event.offsetX
-                human[idCurrentMember].y = event.offsetY
+                if(checkContraints(event.offsetX, event.offsetY)){
+                    human[idCurrentMember].x = event.offsetX
+                    human[idCurrentMember].y = event.offsetY
+                }
                 selected = false
             }
         }
     }
     renderWall()
 });
+
+function checkContraints(x,y){
+    const adjacent = (idCurrentMember+2)%4
+    const a = distanceBody(human[adjacent].x, human[adjacent].y)
+    const b = distanceBody(x, y)
+    return a+b < parseInt(curseur.value)
+}
+
+function distanceCalculation(x1,x2,y1,y2){
+    const x = x1 - x2
+    const y = y1 - y2
+    return Math.sqrt(x * x + y * y);
+}
+
+function distanceBody(x,y){
+    return distanceCalculation(x, human[4].x, y, human[4].y)
+}
+
+curseur.addEventListener("change", function(e) {
+    renderWall()
+}); 
