@@ -60,13 +60,56 @@ let members = drawHuman();
 
 let circles = [];
 
+let positionsCircles = null;
+
+function uploadPositionFile() {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = ".json";
+  input.onchange = (event) => {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const content = e.target.result;
+      const data = JSON.parse(content);
+      positionsCircles = data.wall;
+      let maxX = Math.max(...positionsCircles.map((p) => p.x));
+      let maxY = Math.max(...positionsCircles.map((p) => p.y));
+      const coefX = (canvas.width / maxX) * 0.8;
+      const coefY = (canvas.height / maxY) * 0.8;
+      positionsCircles = positionsCircles.map(
+        (p) => new pos(p.x * coefX, canvas.height - p.y * coefY)
+        
+      );
+      createWall();
+      document.getElementById('deleteButton').style.display = 'inline';
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+function deletePositionFile() {
+    document.getElementById('deleteButton').style.display = 'none';
+    positionsCircles = null;
+    createWall();
+}
+
 function createWall() {
   circles = [];
-  for (let i = 0; i < 50; i++) {
-    x = getRandomInt(0, canvas.width);
-    y = getRandomInt(0, canvas.height);
-    let c = createCircle(x, y);
-    addToCircleList(c);
+
+  if (positionsCircles != null) {
+    for (const circle of positionsCircles) {
+      let c = createCircle(circle.x, circle.y);
+      addToCircleList(c);
+    }
+  } else {
+    for (let i = 0; i < 50; i++) {
+      x = getRandomInt(0, canvas.width);
+      y = getRandomInt(0, canvas.height);
+      let c = createCircle(x, y);
+      addToCircleList(c);
+    }
   }
   renderWall();
 }

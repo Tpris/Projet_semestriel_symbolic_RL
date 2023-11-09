@@ -10,3 +10,28 @@
     cursor: pointer;
   }
   
+  #takePositionsButton {
+    position: fixed;
+    top: 10px;
+    right: 250px;
+    float: left;
+    background-color: #008CBA;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  #deleteButton {
+    position: fixed;
+    top: 10px;
+    right: 190px;
+    float: left;
+    background-color: #ffffff;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }

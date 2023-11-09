@@ -5,7 +5,11 @@
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
+    <button id="takePositionsButton" onclick="uploadPositionFile()">Positions des prises</button>
     <button id="createWallButton" onclick="createWall()">Créer mur d'escalade</button>
+    <button id="deleteButton" style="display: none;" onclick="deletePositionFile()">
+      <img src="trash_icon.png" alt="Delete" width="20" height="20">
+    </button>
     <canvas id="canvas"></canvas> 
     <div>
       <input type="range" id="dist" min="0" max="600" value="300"/>
