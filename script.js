@@ -58,12 +58,18 @@ let members = drawHuman()
 
 let circles = []
 
-for (let i = 0; i < 50; i++) {
-    x = getRandomInt(0,canvas.width)
-    y = getRandomInt(0,canvas.height)
-    let c = createCircle(x,y)
-    addToCircleList(c)
+function createWall() {
+    circles = []
+    for (let i = 0; i < 50; i++) {
+        x = getRandomInt(0,canvas.width)
+        y = getRandomInt(0,canvas.height)
+        let c = createCircle(x,y)
+        addToCircleList(c)
+    }
+    renderWall()
 }
+
+createWall()
 
 function linkMembers(){
     for (let i = 0; i<4;i++){
