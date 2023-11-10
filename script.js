@@ -231,10 +231,22 @@ canvas.addEventListener("click", function (event) {
 });
 
 function checkContraints(x, y) {
+  return checkDistance(x,y) && checkHandsOnTop(x,y)
+}
+
+function checkDistance(x,y){
   const adjacent = (idCurrentMember + 2) % 4;
   const a = distanceBody(human[adjacent].x, human[adjacent].y);
   const b = distanceBody(x, y);
   return a + b < parseInt(curseur.value);
+}
+
+function checkHandsOnTop(x,y){
+  const hand = idCurrentMember==0 || idCurrentMember==1
+  if(hand){
+    return y < human[2].y && y < human[3].y
+  }
+  return y > human[0].y && y > human[1].y
 }
 
 function distanceCalculation(x1, x2, y1, y2) {
