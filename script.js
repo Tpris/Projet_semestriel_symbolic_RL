@@ -44,8 +44,17 @@ function drawHuman() {
   linkMembers();
   ctx.fillStyle = "red";
   let members = [];
-  for (let i = 0; i < 4; i++) {
-    members.push(createCircle(human[i].x, human[i].y));
+  for (let i = 0; i < 2; i++) {
+    hand = new Path2D();
+    hand.ellipse(human[i].x, human[i].y, 10, 15, 0, 0, 2 * Math.PI);
+    ctx.fill(hand);
+    members.push(hand);
+  }
+  for (let i = 2; i < 4; i++) {
+    feet = new Path2D();
+    feet.ellipse(human[i].x, human[i].y, 15, 10, 0, 0, 2 * Math.PI);
+    ctx.fill(feet);
+    members.push(feet);
   }
   body = new Path2D();
   body.ellipse(human[4].x, human[4].y, 25, 30, 0, 0, 2 * Math.PI);
