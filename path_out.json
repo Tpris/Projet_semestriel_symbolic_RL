@@ -1,0 +1,22 @@
+{
+    "path": [
+        {
+            "hleft": 1,
+            "hright": 2,
+            "lleft": 3,
+            "lright": 4
+        },
+        {
+            "hleft": 3,
+            "hright": 4,
+            "lleft": 3,
+            "lright": 4
+        },
+        {
+            "hleft": 3,
+            "hright": 4,
+            "lleft": 5,
+            "lright": 6
+        }
+    ]
+}
