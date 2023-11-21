@@ -69,7 +69,7 @@ let members = drawHuman();
 
 let circles = [];
 
-let jsonFileUpload = false;
+let jsonFileUploaded = false;
 let positionsCircles = [];
 
 function uploadPositionFile() {
@@ -82,7 +82,7 @@ function uploadPositionFile() {
     reader.onload = (e) => {
       const content = e.target.result;
       const data = JSON.parse(content);
-      jsonFileUpload = true;
+      jsonFileUploaded = true;
       positionsCircles = data.wall;
       let maxX = Math.max(...positionsCircles.map((p) => p.x));
       let maxY = Math.max(...positionsCircles.map((p) => p.y));
@@ -96,21 +96,23 @@ function uploadPositionFile() {
     };
     reader.readAsText(file);
   };
+  circles[0].moveTo(0, 0);
   input.click();
 }
 
 function deletePositionFile() {
   document.getElementById("deleteButton").style.display = "none";
-  positionsCircles = null;
+  jsonFileUploaded = false;
+  positionsCircles = [];
   createWall();
 }
 
 function createWall() {
   circles = [];
 
-  if (positionsCircles != null) {
-    for (const circle of positionsCircles) {
-      let c = createCircle(circle.x, circle.y);
+  if (jsonFileUploaded) {
+    for (const position of positionsCircles) {
+      let c = createCircle(position.x, position.y);
       addToCircleList(c);
     }
   } else {
