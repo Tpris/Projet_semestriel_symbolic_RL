@@ -69,7 +69,8 @@ let members = drawHuman();
 
 let circles = [];
 
-let positionsCircles = null;
+let jsonFileUploaded = false;
+let positionsCircles = [];
 
 function uploadPositionFile() {
   const input = document.createElement("input");
@@ -81,6 +82,7 @@ function uploadPositionFile() {
     reader.onload = (e) => {
       const content = e.target.result;
       const data = JSON.parse(content);
+      jsonFileUploaded = true;
       positionsCircles = data.wall;
       let maxX = Math.max(...positionsCircles.map((p) => p.x));
       let maxY = Math.max(...positionsCircles.map((p) => p.y));
@@ -88,34 +90,37 @@ function uploadPositionFile() {
       const coefY = (canvas.height / maxY) * 0.8;
       positionsCircles = positionsCircles.map(
         (p) => new pos(p.x * coefX, canvas.height - p.y * coefY)
-        
       );
       createWall();
-      document.getElementById('deleteButton').style.display = 'inline';
+      document.getElementById("deleteButton").style.display = "inline";
     };
     reader.readAsText(file);
   };
+  circles[0].moveTo(0, 0);
   input.click();
 }
 
 function deletePositionFile() {
-    document.getElementById('deleteButton').style.display = 'none';
-    positionsCircles = null;
-    createWall();
+  document.getElementById("deleteButton").style.display = "none";
+  jsonFileUploaded = false;
+  positionsCircles = [];
+  createWall();
 }
 
 function createWall() {
   circles = [];
 
-  if (positionsCircles != null) {
-    for (const circle of positionsCircles) {
-      let c = createCircle(circle.x, circle.y);
+  if (jsonFileUploaded) {
+    for (const position of positionsCircles) {
+      let c = createCircle(position.x, position.y);
       addToCircleList(c);
     }
   } else {
-    for (let i = 0; i < 50; i++) {
+    positionsCircles = [];
+    for (let i = 0; i < 10; i++) {
       x = getRandomInt(0, canvas.width);
       y = getRandomInt(0, canvas.height);
+      positionsCircles.push(new pos(x, y));
       let c = createCircle(x, y);
       addToCircleList(c);
     }
@@ -163,21 +168,35 @@ function renderWall() {
 
 // Listen for mouse moves
 canvas.addEventListener("mousedown", function (event) {
-  // Check whether point is inside circle
-  for (const circle of circles) {
+  let deleteCircle = false;
+  circles.forEach((circle, index) => {
+    // Check whether point is inside circle
     if (ctx.isPointInPath(circle, event.offsetX, event.offsetY)) {
+      if (event.button === 1 || (event.button === 0 && event.ctrlKey)) {
+        circles.splice(index, 1);
+        renderWall();
+        deleteCircle = true;
+        return;
+      }
       currentCircle = circle;
       moved = true;
       // remove from list
-      const index = circles.indexOf(currentCircle);
-      const x = circles.splice(index, 1);
+      circles.splice(index, 1);
     }
-  }
+  });
 
   if (ctx.isPointInPath(body, event.offsetX, event.offsetY)) {
     currentCircle = body;
     moved = true;
     isBody = true;
+  }
+
+  // click middle button create circle
+  if (
+    !deleteCircle &&
+    (event.button === 1 || (event.button === 0 && event.ctrlKey))
+  ) {
+    addToCircleList(createCircle(event.offsetX, event.offsetY));
   }
 });
 
@@ -231,22 +250,22 @@ canvas.addEventListener("click", function (event) {
 });
 
 function checkContraints(x, y) {
-  return checkDistance(x,y) && checkHandsOnTop(x,y)
+  return checkDistance(x, y) && checkHandsOnTop(x, y);
 }
 
-function checkDistance(x,y){
+function checkDistance(x, y) {
   const adjacent = (idCurrentMember + 2) % 4;
   const a = distanceBody(human[adjacent].x, human[adjacent].y);
   const b = distanceBody(x, y);
   return a + b < parseInt(curseur.value);
 }
 
-function checkHandsOnTop(x,y){
-  const hand = idCurrentMember==0 || idCurrentMember==1
-  if(hand){
-    return y < human[2].y && y < human[3].y
+function checkHandsOnTop(x, y) {
+  const hand = idCurrentMember == 0 || idCurrentMember == 1;
+  if (hand) {
+    return y < human[2].y && y < human[3].y;
   }
-  return y > human[0].y && y > human[1].y
+  return y > human[0].y && y > human[1].y;
 }
 
 function distanceCalculation(x1, x2, y1, y2) {
