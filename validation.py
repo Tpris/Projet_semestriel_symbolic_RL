@@ -5,16 +5,11 @@ from random import randint, choice, choices, random
 from copy import deepcopy
 
 MAX_LENGTH = 20
-POP_SIZE = 20
-NUM_PARENTS = 10
-MUTATION_PROBA = 0.2
-MUTATION_FACTOR = 0.5
-GENERATIONS = 100
 
 path_file = "path_001.json"
 wall_file = "wall_001.json"
 output_id = "out"
-wingspan = 3
+wingspan = 2.3
 
 
 def json_to_path(file):
@@ -24,7 +19,7 @@ def json_to_path(file):
         file (string): a json describing a path in the right format
 
     Returns:
-        dict: the said path as a dictionnary
+        dict: the said path as a list
     """
     f = open(file)
     data = json.load(f)
@@ -34,7 +29,7 @@ def path_to_json(path):
     """Create a json file reprensenting a path 
 
     Args:
-        path (dict): a path you want to convert to json
+        path (list): a path you want to convert to json
     """
     json_object = json.dumps({'path':path}, indent=4)
     with open(f"path_{output_id}.json", "w") as outfile:
@@ -47,7 +42,7 @@ def json_to_wall(file):
         file (string): a json describing a wall in the right format
 
     Returns:
-        dict: the said wall as a dictionnary
+        list: the said wall as a list
     """
     f = open(file)
     data = json.load(f)
@@ -59,7 +54,7 @@ def wall_to_json(wall):
     """Create a json file reprensenting a wall 
 
     Args:
-        wall (dict): a wall you want to convert to json
+        wall (list): a wall you want to convert to json
     """
     json_object = json.dumps({'wall':wall}, indent=4)
     with open(f"wall_{output_id}.json", "w") as outfile:
@@ -67,12 +62,11 @@ def wall_to_json(wall):
 
 
 path = json_to_path(path_file)
-# print(path)
-# path_to_json(path)
+print(path)
+path_to_json(path)
 wall = json_to_wall(wall_file)
-# print(wall)
-# wall_to_json(wall)
-
+print(wall)
+wall_to_json(wall)
 
 def valid_path(path,wall):
     if not valid_start(path):
@@ -88,14 +82,29 @@ def valid_path(path,wall):
     return True
 
 def valid_start(path):
+    """Check if the first step of a path is the default start 
+
+    Args:
+        path (list): a path you want to convert to json
+    """
     return path[0] == {'hleft': None, 'hright': None, 'lleft': None, 'lright': None}
 
 
-def compute_wingspan(a,b):
+def distance(a,b):
+    """Compute the distance between two points a and b 
+
+    Args:
+        a,b (dict): a = {x:k,y:l} etc
+    """
     return sqrt((a['x']-b['x'])**2+(a['y']-b['y'])**2)
 
 
 def corpse_position(step,wall):
+    """Using a wall give the position of each member for a given step  
+
+    Args:
+        step (dict), wall (list)
+    """
     members = []
     for member in step.keys():
         if step[member] == None:
@@ -113,11 +122,9 @@ def corpse_position(step,wall):
 
 
 def valid_wingspans(positions):
-
     for pos1, pos2 in combinations(positions, 2):
-        if compute_wingspan(pos1, pos2) > wingspan:
+        if distance(pos1, pos2) > wingspan:
             return False
-
     return True
 
 
@@ -129,9 +136,8 @@ def valid_step_wingspan(step, wall):
 def valid_step(step,wall):
     if not valid_step_wingspan(step,wall):
         return False
-    
-
     return True
+
 
 def valid_steps(path,wall):
     for step in path:
@@ -146,9 +152,9 @@ def valid_step_distances(path,wall):
         for step_index in range(len(path)-1):
 
             positions = list(corpse_position(path[step_index], wall))
+            
             for i in corpse_position(path[step_index+1], wall) : 
                 positions.append(i)
-            # print(positions)
             if not valid_wingspans(positions):
                 return False
     else :
@@ -196,97 +202,3 @@ def create_random_path(wall):
     return path
 
 # print(create_random_path())
-
-def fitness(path,wall):
-    a = path[-1]['hleft']
-    b = path[-1]['hright']
-    if a == None:
-        a=0
-    if b == None:
-        b=0
-    if is_winning_path(path,wall) :
-        return 10
-    if valid_path(path,wall) :
-        return (2-(2*len(wall)-(a+b))/(2*len(wall)))#/len(path)
-    return 0
-
-def crossover(path1, path2):
-    cut = randint(1, min(len(path1), len(path2)))
-    new_path_1 = path1[:cut] + path2[cut:]
-    new_path_2 = path2[:cut] + path1[cut:]
-
-    return new_path_1, new_path_2
-
-# a,b = crossover(path,path)
-# print(a==path)
-
-def init_population(wall):
-    population = [create_random_path(wall) for _ in range(POP_SIZE)]
-    return population
-
-def fill_population(population, wall):
-    for _ in range(POP_SIZE-len(population)):
-        population.append(create_random_path(wall))
-    return population
-
-def fit_pop(population,wall):
-    fitted_pop = []
-    for path in population:
-        fitted_pop.append(fitness(path,wall))
-    return fitted_pop
-
-def select_parents(population, fitness_scores,wall):
-
-    selected_parents = []
-
-    for _ in range(NUM_PARENTS):
-
-        selected_index = choices(range(len(population)), weights=fitness_scores)
-        selected_parents.append(population[selected_index[0]])
-
-    return selected_parents
-
-def breed_population(parents):
-    offspring = []
-
-    if len(parents) % 2 != 0:
-        raise ValueError("The number of parents must be even for crossover.")
-
-    for i in range(0, len(parents), 2):
-        parent1 = parents[i]
-        parent2 = parents[i + 1]
-
-        child1, child2 = crossover(parent1, parent2)
-
-        offspring.append(child1)
-        offspring.append(child2)
-
-    return offspring
-
-def mutate(population,wall):
-    for path in population :
-        if random() < MUTATION_PROBA :
-            mutation_index = randint(int(len(path)*MUTATION_FACTOR),len(path)-1)
-            mutation_size = randint(mutation_index,MAX_LENGTH)
-            path = path[:mutation_index]
-            while len(path) <= mutation_size:
-                path = random_extend(path,wall)
-    return population
-
-
-population = init_population(wall)
-
-
-for generation in range(GENERATIONS):
-    print(f"Generation : {generation}")
-    fitness_scores = fit_pop(population,wall)
-    parents = select_parents(population, fitness_scores,wall)
-    offspring = breed_population(parents)
-    offspring = [i for i in offspring if valid_path(i,wall)]
-    offspring = fill_population(offspring, wall)
-    offspring = mutate(offspring,wall)
-    population = offspring
-
-
-best_solution = population[fitness_scores.index(max(fitness_scores))]
-print(best_solution)
