@@ -364,5 +364,46 @@ function centreDeGravite() {
   gravite = centreSegment(c1[0], c2[0], c1[1], c2[1]);
   human[4].x = gravite[0];
   human[4].y = gravite[1];
-  console.log(human[4]);
+}
+
+function uploadPathFile(){
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = ".json";
+  input.onchange = (event) => {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const content = e.target.result;
+      const data = JSON.parse(content);
+      const pathFile  = data.path;
+      pathFile.forEach(async (move, index) => {
+        await delay(1000*index)
+        moveHuman(move)
+      });
+
+      console.log(pathFile)
+    };
+    reader.readAsText(file);
+  };
+  input.click()
+}
+
+function moveHuman(move){
+  m = [move.hleft, move.hright, move.lright, move.lleft]
+
+  for (let i = 0; i < 4; i++) {
+    if(m[i] != null){
+      ind = m[i]-1
+      human[i].x = positionsCircles[ind].x
+      human[i].y = positionsCircles[ind].y
+      centreDeGravite()
+    }
+  }
+  renderWall()
+  console.log(m)
+}
+
+function delay(time) {
+  return new Promise(resolve => setTimeout(resolve, time));
 }
