@@ -21,7 +21,7 @@ drawLineDist();
 
 let moved = false;
 let isBody = false;
-let currentCircle = null;
+let idCurrentCircle = null;
 let finalCircle = null;
 let selected = false;
 let idCurrentMember = null;
@@ -98,9 +98,8 @@ function exportPositionFile() {
   URL.revokeObjectURL(url);
 }
 
-let positionFile = null;
-
 function uploadPositionFile() {
+  positionsCircles = []
   const input = document.createElement("input");
   input.type = "file";
   input.accept = ".json";
@@ -111,7 +110,10 @@ function uploadPositionFile() {
       const content = e.target.result;
       const data = JSON.parse(content);
       jsonFileUploaded = true;
-      positionFile  = data.wall;
+      const positionFile  = data.wall;
+      positionFile.forEach((position, index) => {
+        addToPositionCircleList(position.x, position.y)
+      });
       createWall();
       document.getElementById("deleteButton").style.display = "inline";
     };
@@ -124,12 +126,11 @@ function uploadPositionFile() {
 function deletePositionFile() {
   document.getElementById("deleteButton").style.display = "none";
   jsonFileUploaded = false;
-  positionFile = null;
   createWall();
 }
 
+
 function createWall() {
-  circles = [];
   human = [
     new pos(center - 70, canvas.height - 120),
     new pos(center + 70, canvas.height - 120),
@@ -137,27 +138,13 @@ function createWall() {
     new pos(center - 50, canvas.height - 20),
     new pos(center, canvas.height - 100),
   ];
-  let final = false;
-  if (jsonFileUploaded) {
-    positionFile.forEach((position, index) => {
-      if (index == positionFile.length - 1) {
-        final = true;
-      }
-      let c = createCircle(position.x, position.y, final);
-      addToCircleList(c);
-    });
-  } else {
+  if (!jsonFileUploaded) {
     positionsCircles = [];
     const numberCircles = getRandomInt(4, 10);
     for (let i = 0; i < numberCircles; i++) {
-      if (i == numberCircles - 1) {
-        final = true;
-      }
       x = getRandomInt(0, canvas.width);
       y = getRandomInt(0, canvas.height);
-      let c = createCircle(x, y, final);
       positionsCircles.push(new pos(x, y));
-      addToCircleList(c);
     }
   }
   renderWall();
@@ -192,6 +179,10 @@ function addToCircleList(circle) {
   circles.push(circle);
 }
 
+function addToPositionCircleList(x,y) {
+  positionsCircles.push(new pos(x, y));
+}
+
 function getRandomInt(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
@@ -200,15 +191,18 @@ function getRandomInt(min, max) {
 
 function renderWall() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  circles = []
   drawLineDist();
-  for (const circle of circles) {
-    if (circle == finalCircle) {
-      ctx.fillStyle = "green";
-    }
-    ctx.fill(circle);
-    ctx.fillStyle = "blue";
-  }
+  drawCircles();
   members = drawHuman();
+}
+
+function drawCircles(){
+  positionsCircles.forEach((position, index) => {
+    final = index == positionsCircles.length - 1
+    let c = createCircle(position.x, position.y, final);
+    addToCircleList(c);
+  });
 }
 
 // Listen for mouse moves
@@ -227,16 +221,12 @@ canvas.addEventListener("mousedown", function (event) {
         renderWall();
         return;
       }
-      currentCircle = circle;
+      idCurrentCircle = circles.indexOf(circle);
       moved = true;
-      // remove from list
-      circles.splice(index, 1);
-      positionsCircles.splice(index, 1);
     }
   });
 
   if (ctx.isPointInPath(body, event.offsetX, event.offsetY)) {
-    currentCircle = body;
     moved = true;
     isBody = true;
   }
@@ -246,36 +236,24 @@ canvas.addEventListener("mousedown", function (event) {
     !deleteCircle &&
     (event.button === 1 || (event.button === 0 && event.ctrlKey))
   ) {
-    addToCircleList(createCircle(event.offsetX, event.offsetY));
+    positionsCircles.splice(0,0,new pos(event.offsetX, event.offsetY))
+    renderWall();
   }
 });
 
 canvas.onmousemove = function (event) {
-  if (moved && currentCircle != null) {
-    // new circle
+  if (isBody) {
+    human[4].x = event.offsetX;
+    human[4].y = event.offsetY;
     renderWall();
-    if (isBody) {
-      ctx.fillStyle = "red";
-      human[4].x = event.offsetX;
-      human[4].y = event.offsetY;
-      body = createCircle(event.offsetX, event.offsetY);
-      currentCircle = body;
-      ctx.fillStyle = "blue";
-    } else {
-      let final = false;
-      if (currentCircle == finalCircle) {
-        final = true;
-      }
-      currentCircle = createCircle(event.offsetX, event.offsetY, final);
-    }
-  }
+  } else if (moved && idCurrentCircle != null) {
+    positionsCircles[idCurrentCircle].x = event.offsetX
+    positionsCircles[idCurrentCircle].y = event.offsetY
+    renderWall();
+  } 
 };
 
 canvas.onmouseup = function (event) {
-  if (currentCircle != null && !isBody) {
-    addToCircleList(currentCircle);
-    positionsCircles.push(new pos(event.offsetX, event.offsetY));
-  }
   moved = false;
   isBody = false;
 };
