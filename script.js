@@ -40,7 +40,6 @@ let human = [
   new pos(center, canvas.height - 100), // body
 ];
 
-humanBody = [];
 
 let body;
 
@@ -76,6 +75,31 @@ let circles = [];
 let jsonFileUploaded = false;
 let positionsCircles = [];
 
+function exportPositionFile() {
+  indexFinal = circles.indexOf(finalCircle);
+  const wall = positionsCircles.map((p, index) => index != indexFinal ? ({x: p.x, y: p.y}) : null).filter((p) => p != null );
+  
+  wall.push(positionsCircles[indexFinal])
+  console.log(wall);
+  const jsonData = JSON.stringify({ wall});
+
+  const blob = new Blob([jsonData], { type: 'application/json' });
+
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'wall.json';
+
+  document.body.appendChild(a);
+  a.click();
+
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+let positionFile = null;
+
 function uploadPositionFile() {
   const input = document.createElement("input");
   input.type = "file";
@@ -87,14 +111,7 @@ function uploadPositionFile() {
       const content = e.target.result;
       const data = JSON.parse(content);
       jsonFileUploaded = true;
-      positionsCircles = data.wall;
-      let maxX = Math.max(...positionsCircles.map((p) => p.x));
-      let maxY = Math.max(...positionsCircles.map((p) => p.y));
-      const coefX = (canvas.width / maxX) * 0.8;
-      const coefY = (canvas.height / maxY) * 0.8;
-      positionsCircles = positionsCircles.map(
-        (p) => new pos(p.x * coefX, canvas.height - p.y * coefY)
-      );
+      positionFile  = data.wall;
       createWall();
       document.getElementById("deleteButton").style.display = "inline";
     };
@@ -107,7 +124,7 @@ function uploadPositionFile() {
 function deletePositionFile() {
   document.getElementById("deleteButton").style.display = "none";
   jsonFileUploaded = false;
-  positionsCircles = [];
+  positionFile = null;
   createWall();
 }
 
@@ -122,8 +139,8 @@ function createWall() {
   ];
   let final = false;
   if (jsonFileUploaded) {
-    positionsCircles.forEach((position, index) => {
-      if (index == positionsCircles.length - 1) {
+    positionFile.forEach((position, index) => {
+      if (index == positionFile.length - 1) {
         final = true;
       }
       let c = createCircle(position.x, position.y, final);
@@ -131,7 +148,7 @@ function createWall() {
     });
   } else {
     positionsCircles = [];
-    const numberCircles = getRandomInt(10, 20);
+    const numberCircles = getRandomInt(4, 10);
     for (let i = 0; i < numberCircles; i++) {
       if (i == numberCircles - 1) {
         final = true;
