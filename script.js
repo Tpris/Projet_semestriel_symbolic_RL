@@ -393,7 +393,7 @@ function moveHuman(move){
   m = [move.hleft, move.hright, move.lright, move.lleft]
 
   for (let i = 0; i < 4; i++) {
-    if(m[i] != null){
+    if(m[i] != null && m[i] != 0){
       ind = m[i]-1
       human[i].x = positionsCircles[ind].x
       human[i].y = positionsCircles[ind].y
