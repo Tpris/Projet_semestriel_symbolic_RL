@@ -16,11 +16,13 @@ function drawLineDist() {
   ctx.stroke();
 }
 
+let win = false;
 drawLineDist();
 
 let moved = false;
 let isBody = false;
 let currentCircle = null;
+let finalCircle = null;
 let selected = false;
 let idCurrentMember = null;
 
@@ -31,12 +33,14 @@ class pos {
   }
 }
 let human = [
-  new pos(center - 70, canvas.height - 120),
-  new pos(center + 70, canvas.height - 120),
-  new pos(center + 50, canvas.height - 20),
-  new pos(center - 50, canvas.height - 20),
-  new pos(center, canvas.height - 100),
+  new pos(center - 70, canvas.height - 120), // left hand
+  new pos(center + 70, canvas.height - 120), // right hand
+  new pos(center + 50, canvas.height - 20), // right foot
+  new pos(center - 50, canvas.height - 20), // left foot
+  new pos(center, canvas.height - 100), // body
 ];
+
+humanBody = [];
 
 let body;
 
@@ -109,19 +113,33 @@ function deletePositionFile() {
 
 function createWall() {
   circles = [];
-
+  human = [
+    new pos(center - 70, canvas.height - 120),
+    new pos(center + 70, canvas.height - 120),
+    new pos(center + 50, canvas.height - 20),
+    new pos(center - 50, canvas.height - 20),
+    new pos(center, canvas.height - 100),
+  ];
+  let final = false;
   if (jsonFileUploaded) {
-    for (const position of positionsCircles) {
-      let c = createCircle(position.x, position.y);
+    positionsCircles.forEach((position, index) => {
+      if (index == positionsCircles.length - 1) {
+        final = true;
+      }
+      let c = createCircle(position.x, position.y, final);
       addToCircleList(c);
-    }
+    });
   } else {
     positionsCircles = [];
-    for (let i = 0; i < 10; i++) {
+    const numberCircles = getRandomInt(10, 20);
+    for (let i = 0; i < numberCircles; i++) {
+      if (i == numberCircles - 1) {
+        final = true;
+      }
       x = getRandomInt(0, canvas.width);
       y = getRandomInt(0, canvas.height);
+      let c = createCircle(x, y, final);
       positionsCircles.push(new pos(x, y));
-      let c = createCircle(x, y);
       addToCircleList(c);
     }
   }
@@ -140,10 +158,16 @@ function linkMembers() {
 }
 
 // Create circle
-function createCircle(x, y) {
+function createCircle(x, y, final = false) {
   let circle = new Path2D();
   circle.arc(x, y, 10, 0, 2 * Math.PI);
+
+  if (final) {
+    finalCircle = circle;
+    ctx.fillStyle = "green";
+  }
   ctx.fill(circle);
+  ctx.fillStyle = "blue";
   return circle;
 }
 
@@ -161,7 +185,11 @@ function renderWall() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   drawLineDist();
   for (const circle of circles) {
+    if (circle == finalCircle) {
+      ctx.fillStyle = "green";
+    }
     ctx.fill(circle);
+    ctx.fillStyle = "blue";
   }
   members = drawHuman();
 }
@@ -173,15 +201,20 @@ canvas.addEventListener("mousedown", function (event) {
     // Check whether point is inside circle
     if (ctx.isPointInPath(circle, event.offsetX, event.offsetY)) {
       if (event.button === 1 || (event.button === 0 && event.ctrlKey)) {
-        circles.splice(index, 1);
-        renderWall();
         deleteCircle = true;
+        if (circle == finalCircle) {
+          return;
+        }
+        circles.splice(index, 1);
+        positionsCircles.splice(index, 1);
+        renderWall();
         return;
       }
       currentCircle = circle;
       moved = true;
       // remove from list
       circles.splice(index, 1);
+      positionsCircles.splice(index, 1);
     }
   });
 
@@ -212,7 +245,11 @@ canvas.onmousemove = function (event) {
       currentCircle = body;
       ctx.fillStyle = "blue";
     } else {
-      currentCircle = createCircle(event.offsetX, event.offsetY);
+      let final = false;
+      if (currentCircle == finalCircle) {
+        final = true;
+      }
+      currentCircle = createCircle(event.offsetX, event.offsetY, final);
     }
   }
 };
@@ -220,6 +257,7 @@ canvas.onmousemove = function (event) {
 canvas.onmouseup = function (event) {
   if (currentCircle != null && !isBody) {
     addToCircleList(currentCircle);
+    positionsCircles.push(new pos(event.offsetX, event.offsetY));
   }
   moved = false;
   isBody = false;
@@ -241,6 +279,11 @@ canvas.addEventListener("click", function (event) {
           human[idCurrentMember].x = event.offsetX;
           human[idCurrentMember].y = event.offsetY;
           centreDeGravite();
+          if (!win && checkWin()) {
+            win = true;
+            renderWall();
+            setTimeout(winDisplay, 1000);
+          }
         }
         selected = false;
       }
@@ -268,6 +311,18 @@ function checkHandsOnTop(x, y) {
   return y > human[0].y && y > human[1].y;
 }
 
+function checkWin() {
+  let lhand = human[0];
+  let rhand = human[1];
+  return (
+    ctx.isPointInPath(finalCircle, lhand.x, lhand.y) &&
+    ctx.isPointInPath(finalCircle, rhand.x, rhand.y)
+  );
+}
+
+function winDisplay() {
+  alert("You win");
+}
 function distanceCalculation(x1, x2, y1, y2) {
   const x = x1 - x2;
   const y = y1 - y2;
