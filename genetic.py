@@ -1,10 +1,10 @@
 from validation import *
 
 POP_SIZE = 200
-NUM_PARENTS = 100
+NUM_PARENTS = 50
 MUTATION_PROBA = 0.2
 MUTATION_FACTOR = 0.5
-GENERATIONS = 10
+GENERATIONS = 5
 
 
 def fitness(path, wall):
@@ -16,9 +16,9 @@ def fitness(path, wall):
         b = 0
     if is_winning_path(path, wall):
         print("OMG")
-        return 10 - 10 * (len(path) / MAX_LENGTH)
+        return 10*(1 - (len(path) / MAX_LENGTH))
     if valid_path(path, wall):
-        return 2 - (2 * len(wall) - (a + b)) / (2 * len(wall))
+        return  (a + b) / (2*len(wall))
     return 0
 
 

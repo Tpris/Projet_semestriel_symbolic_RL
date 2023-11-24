@@ -59,6 +59,28 @@ function drawHuman() {
     ctx.fill(feet);
     members.push(feet);
   }
+
+  // show symetry
+  
+  hand = new Path2D();
+  hand.ellipse(human[0].x+5, human[0].y+3, 5, 15, 40 * Math.PI/180, 0, 2 * Math.PI);
+  ctx.fill(hand);
+
+  hand = new Path2D();
+  hand.ellipse(human[1].x-5, human[1].y+3, 5, 15, -40 * Math.PI/180, 0, 2 * Math.PI);
+  ctx.fill(hand);
+
+  feet = new Path2D();
+  feet.ellipse(human[2].x+16, human[2].y, 5, 8, 0, 0, 2 * Math.PI);
+  ctx.fill(feet);
+
+  feet = new Path2D();
+  feet.ellipse(human[3].x-16, human[3].y, 5, 8, 0, 0, 2 * Math.PI);
+  ctx.fill(feet);
+
+
+
+  // body
   body = new Path2D();
   body.ellipse(human[4].x, human[4].y, 25, 30, 0, 0, 2 * Math.PI);
   ctx.fill(body);
@@ -290,7 +312,7 @@ canvas.addEventListener("click", function (event) {
 });
 
 function checkContraints(x, y) {
-  return checkDistance(x, y) && checkHandsOnTop(x, y);
+  return checkDistance(x, y) && checkHandsOnTop(y) && checkLeftRightOrientation(x);
 }
 
 function checkDistance(x, y) {
@@ -300,12 +322,20 @@ function checkDistance(x, y) {
   return a + b < parseInt(curseur.value);
 }
 
-function checkHandsOnTop(x, y) {
+function checkHandsOnTop(y) {
   const hand = idCurrentMember == 0 || idCurrentMember == 1;
   if (hand) {
     return y < human[2].y && y < human[3].y;
   }
   return y > human[0].y && y > human[1].y;
+}
+
+function checkLeftRightOrientation(x) {
+  const left = idCurrentMember == 0 || idCurrentMember == 3;
+  if (left) {
+    return x < human[1].x && x < human[2].x;
+  }
+  return x > human[0].x && x > human[3].x;
 }
 
 function checkWin() {
