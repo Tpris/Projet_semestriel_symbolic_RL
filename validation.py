@@ -127,6 +127,11 @@ def valid_wingspans(positions):
             return False
     return True
 
+def valid_step_positions(step,wall):
+    """Check if the position of the member of the corpse is valid (Hands above foot) """
+    positions = corpse_position(step, wall)
+    highest_leg = max(positions[2]['y'],positions[3]['y'])
+    return positions[0]['y'] > highest_leg and positions[1]['y'] > highest_leg
 
 def valid_step_wingspan(step, wall):
     positions = corpse_position(step, wall)
@@ -134,9 +139,8 @@ def valid_step_wingspan(step, wall):
 
     
 def valid_step(step,wall):
-    if not valid_step_wingspan(step,wall):
-        return False
-    return True
+    return valid_step_wingspan(step,wall) and valid_step_positions(step,wall)
+
 
 
 def valid_steps(path,wall):
