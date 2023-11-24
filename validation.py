@@ -99,7 +99,7 @@ def distance(a,b):
     return sqrt((a['x']-b['x'])**2+(a['y']-b['y'])**2)
 
 
-def corpse_position(step,wall):
+def body_position(step,wall):
     """Using a wall give the position of each member for a given step  
 
     Args:
@@ -128,13 +128,13 @@ def valid_wingspans(positions):
     return True
 
 def valid_step_positions(step,wall):
-    """Check if the position of the member of the corpse is valid (Hands above foot) """
-    positions = corpse_position(step, wall)
+    """Check if the position of the member of the body is valid (Hands above foot) """
+    positions = body_position(step, wall)
     highest_leg = max(positions[2]['y'],positions[3]['y'])
     return positions[0]['y'] > highest_leg and positions[1]['y'] > highest_leg
 
 def valid_step_wingspan(step, wall):
-    positions = corpse_position(step, wall)
+    positions = body_position(step, wall)
     return valid_wingspans(positions)
 
     
@@ -155,9 +155,9 @@ def valid_step_distances(path,wall):
     if len(path) > 1:
         for step_index in range(len(path)-1):
 
-            positions = list(corpse_position(path[step_index], wall))
+            positions = list(body_position(path[step_index], wall))
             
-            for i in corpse_position(path[step_index+1], wall) : 
+            for i in body_position(path[step_index+1], wall) : 
                 positions.append(i)
             if not valid_wingspans(positions):
                 return False
