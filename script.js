@@ -147,6 +147,7 @@ function createWall() {
       positionsCircles.push(new pos(x, y));
     }
   }
+  positionsCircles.sort( compare );
   renderWall();
 }
 
@@ -406,4 +407,14 @@ function moveHuman(move){
 
 function delay(time) {
   return new Promise(resolve => setTimeout(resolve, time));
+}
+
+function compare( a, b ) {
+  if ( a.y < b.y ){
+    return 1;
+  }
+  else if ( a.y > b.y ){
+    return -1;
+  }
+  return 0;
 }
