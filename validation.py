@@ -9,7 +9,7 @@ MAX_LENGTH = 20
 path_file = "path_001.json"
 wall_file = "wall_001.json"
 output_id = "out"
-wingspan = 2.3
+wingspan = 1000
 
 
 def json_to_path(file):
