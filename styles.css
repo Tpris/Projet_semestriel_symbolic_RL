@@ -13,7 +13,7 @@
   #takePositionsButton {
     position: fixed;
     top: 10px;
-    right: 250px;
+    right: 285px;
     float: left;
     background-color: #008CBA;
     color: white;
@@ -39,7 +39,7 @@
   #deleteButton {
     position: fixed;
     top: 10px;
-    right: 190px;
+    right: 230px;
     float: left;
     background-color: #ffffff;
     color: white;
