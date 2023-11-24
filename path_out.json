@@ -8,117 +8,81 @@
         },
         {
             "hleft": null,
-            "hright": 0,
-            "lleft": null,
+            "hright": null,
+            "lleft": 9,
             "lright": null
         },
         {
-            "hleft": 10,
+            "hleft": null,
+            "hright": null,
+            "lleft": 0,
+            "lright": null
+        },
+        {
+            "hleft": null,
             "hright": 0,
-            "lleft": null,
+            "lleft": 0,
             "lright": null
         },
         {
             "hleft": 0,
-            "hright": null,
-            "lleft": 10,
-            "lright": 0
-        },
-        {
-            "hleft": 0,
-            "hright": null,
-            "lleft": 10,
-            "lright": 0
-        },
-        {
-            "hleft": 0,
-            "hright": null,
-            "lleft": 10,
-            "lright": 0
-        },
-        {
-            "hleft": 0,
-            "hright": null,
-            "lleft": 10,
-            "lright": 10
-        },
-        {
-            "hleft": 0,
-            "hright": null,
-            "lleft": 10,
-            "lright": 10
-        },
-        {
-            "hleft": 10,
-            "hright": null,
-            "lleft": 10,
-            "lright": 10
-        },
-        {
-            "hleft": 10,
             "hright": 0,
-            "lleft": 10,
-            "lright": 10
+            "lleft": 0,
+            "lright": null
         },
         {
-            "hleft": 10,
-            "hright": 10,
-            "lleft": 10,
-            "lright": 10
+            "hleft": 9,
+            "hright": 0,
+            "lleft": 0,
+            "lright": null
         },
         {
-            "hleft": 7,
-            "hright": 10,
-            "lleft": 10,
-            "lright": 10
+            "hleft": 9,
+            "hright": 0,
+            "lleft": 0,
+            "lright": null
         },
         {
-            "hleft": 10,
-            "hright": 10,
-            "lleft": 10,
-            "lright": 10
+            "hleft": 9,
+            "hright": 0,
+            "lleft": 0,
+            "lright": null
         },
         {
-            "hleft": 10,
-            "hright": 10,
-            "lleft": 1,
-            "lright": 10
+            "hleft": 9,
+            "hright": 0,
+            "lleft": 0,
+            "lright": 9
         },
         {
-            "hleft": 10,
-            "hright": 10,
-            "lleft": 1,
-            "lright": 10
+            "hleft": 9,
+            "hright": 0,
+            "lleft": 0,
+            "lright": 5
         },
         {
-            "hleft": 10,
-            "hright": 10,
-            "lleft": 5,
-            "lright": 10
+            "hleft": 5,
+            "hright": 0,
+            "lleft": 0,
+            "lright": 5
         },
         {
-            "hleft": 10,
-            "hright": 10,
-            "lleft": 8,
-            "lright": 10
+            "hleft": 5,
+            "hright": 0,
+            "lleft": 0,
+            "lright": 5
         },
         {
-            "hleft": 10,
-            "hright": 5,
-            "lleft": 8,
-            "lright": 10
+            "hleft": 5,
+            "hright": 1,
+            "lleft": 0,
+            "lright": 5
         },
         {
-            "hleft": 10,
-            "hright": 5,
-            "lleft": 5,
-            "lright": 10
-        },
-        {
-            "hleft": 10,
-            "hright": 8,
-            "lleft": 5,
-            "lright": 10
+            "hleft": 2,
+            "hright": 1,
+            "lleft": 0,
+            "lright": 5
         }
     ]
 }

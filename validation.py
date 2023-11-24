@@ -89,15 +89,32 @@ def valid_start(path):
     """
     return path[0] == {'hleft': None, 'hright': None, 'lleft': None, 'lright': None}
 
+distance_dictionnary = {}
 
-def distance(a,b):
+def convert(xa,ya,xb,yb):
+    return str(xa) + "," + str(ya) + "," + str(xb)+ "," + str(yb)
+
+def distance(xa,ya,xb,yb):
     """Compute the distance between two points a and b 
 
     Args:
         a,b (dict): a = {x:k,y:l} etc
     """
-    return sqrt((a['x']-b['x'])**2+(a['y']-b['y'])**2)
+    keys = distance_dictionnary.keys()
+    if convert(xa,ya,xb,yb) not in keys :
+        dist = sqrt((xa-xb)**2+(ya-yb)**2)
+        distance_dictionnary[convert(xa,ya,xb,yb)]=dist
+        distance_dictionnary[convert(xb,yb,xa,ya)]=dist
+        return dist
+    return distance_dictionnary[convert(xa,ya,xb,yb)]
 
+# def distance(xa,ya,xb,yb):
+#     """Compute the distance between two points a and b 
+
+#     Args:
+#         a,b (dict): a = {x:k,y:l} etc
+#     """
+#     return sqrt((xa-xb)**2+(ya-yb)**2)
 
 def corpse_position(step,wall):
     """Using a wall give the position of each member for a given step  
@@ -123,7 +140,7 @@ def corpse_position(step,wall):
 
 def valid_wingspans(positions):
     for pos1, pos2 in combinations(positions, 2):
-        if distance(pos1, pos2) > wingspan:
+        if distance(pos1['x'], pos1['y'],pos2['x'],pos2['y']) > wingspan:
             return False
     return True
 
