@@ -418,9 +418,12 @@ function uploadPathFile(){
       const content = e.target.result;
       const data = JSON.parse(content);
       const pathFile  = data.path;
+      let legal_move = true;
       pathFile.forEach(async (move, index) => {
         await delay(1000*index)
-        moveHuman(move)
+        if(legal_move){
+          legal_move = moveHuman(move)
+        }
       });
 
       console.log(pathFile)
@@ -435,13 +438,22 @@ function moveHuman(move){
 
   for (let i = 0; i < 4; i++) {
     if(m[i] != null && m[i] != 0){
+      idCurrentMember=i
       ind = m[i]-1
-      human[i].x = positionsCircles[ind].x
-      human[i].y = positionsCircles[ind].y
-      centreDeGravite()
+      x = positionsCircles[ind].x
+      y = positionsCircles[ind].y
+      if(checkContraints(x,y)){
+        human[i].x = x
+        human[i].y = y
+        centreDeGravite()
+      } else{
+        alert("Error : illegal move")
+        return false
+      }
     }
   }
   renderWall()
+  return true
 }
 
 function delay(time) {
