@@ -25,6 +25,10 @@ let idCurrentCircle = null;
 let finalCircle = null;
 let selected = false;
 let idCurrentMember = null;
+let historyHumanPositions = [{"hleft": null,
+                              "hright": null,
+                              "lleft" : null,
+                              "lright" : null}]
 
 let center = canvas.width / 2;
 class pos {
@@ -77,8 +81,6 @@ function drawHuman() {
   feet = new Path2D();
   feet.ellipse(human[3].x-16, human[3].y, 5, 8, 0, 0, 2 * Math.PI);
   ctx.fill(feet);
-
-
 
   // body
   body = new Path2D();
@@ -153,6 +155,10 @@ function deletePositionFile() {
 
 
 function createWall() {
+  historyHumanPositions = [{"hleft": null,
+                            "hright": null,
+                            "lleft" : null,
+                            "lright" : null}]
   human = [
     new pos(center - 70, canvas.height - 120),
     new pos(center + 70, canvas.height - 120),
@@ -297,6 +303,9 @@ canvas.addEventListener("click", function (event) {
           human[idCurrentMember].x = event.offsetX;
           human[idCurrentMember].y = event.offsetY;
           centreDeGravite();
+          indCircle = circles.indexOf(circle)
+          addToHistoryPositions(indCircle, idCurrentMember)
+
           if (!win && checkWin()) {
             win = true;
             renderWall();
@@ -447,4 +456,24 @@ function compare( a, b ) {
     return -1;
   }
   return 0;
+}
+
+function exportPathFile(){
+  // console.log(historyHumanPositions)
+  path = historyHumanPositions
+  const jsonData = JSON.stringify({ path });
+  const blob = new Blob([jsonData], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'path.json';
+  a.click();
+}
+
+function addToHistoryPositions(idCircle, idMember){
+  nameMember = ["hleft", "hright", "lright", "lleft"]
+  const last = historyHumanPositions.slice(-1)[0]
+  copy = {...last}
+  copy[nameMember[idMember]] = idCircle
+  historyHumanPositions.push(copy)
 }
