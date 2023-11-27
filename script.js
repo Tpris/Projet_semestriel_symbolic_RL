@@ -273,6 +273,14 @@ canvas.addEventListener("mousedown", function (event) {
 
 canvas.onmousemove = function (event) {
   if (isBody) {
+    if(historyHumanPositions.length == 1){
+      x_gap = human[4].x - event.offsetX
+      y_gap = human[4].y - event.offsetY
+      for (let i = 0; i < 4; i++) {
+        human[i].x = human[i].x - x_gap
+        human[i].y = human[i].y - y_gap
+      }
+    }
     human[4].x = event.offsetX;
     human[4].y = event.offsetY;
     renderWall();
