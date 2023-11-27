@@ -101,9 +101,10 @@ let positionsCircles = [];
 
 function exportPositionFile() {
   indexFinal = circles.indexOf(finalCircle);
-  const wall = positionsCircles.map((p, index) => index != indexFinal ? ({x: p.x, y: p.y}) : null).filter((p) => p != null );
+  const wall = positionsCircles.map((p, index) => index != indexFinal ? ({x: p.x, y: canvas.height - p.y }) : null).filter((p) => p != null );
   
-  wall.push(positionsCircles[indexFinal])
+  wall.push({ x : positionsCircles[indexFinal].x, y: canvas.height - positionsCircles[indexFinal].y })
+ 
   console.log(wall);
   const jsonData = JSON.stringify({ wall});
 
@@ -136,7 +137,7 @@ function uploadPositionFile() {
       jsonFileUploaded = true;
       const positionFile  = data.wall;
       positionFile.forEach((position, index) => {
-        addToPositionCircleList(position.x, position.y)
+        addToPositionCircleList(position.x, canvas.height - position.y)
       });
       createWall();
       document.getElementById("deleteButton").style.display = "inline";

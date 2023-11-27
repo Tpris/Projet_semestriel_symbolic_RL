@@ -1,5 +1,5 @@
 from validation import *
-
+import time
 POP_SIZE = 200
 NUM_PARENTS = 50
 MUTATION_PROBA = 0.2
@@ -88,6 +88,7 @@ def mutate(population, wall):
 
 
 def algo_genetique():
+    timer = time.time()
     population = init_population(wall)
 
     for generation in range(GENERATIONS):
@@ -102,6 +103,8 @@ def algo_genetique():
 
     best_solution = population[fitness_scores.index(max(fitness_scores))]
     print(best_solution)
+    timer-=time.time()
+    print(timer)
     return best_solution
 
 
