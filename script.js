@@ -176,7 +176,7 @@ function createWall() {
       positionsCircles.push(new pos(x, y));
     }
   }
-  positionsCircles.sort( compare );
+  // positionsCircles.sort( compare );
   renderWall();
 }
 
@@ -442,7 +442,6 @@ function moveHuman(move){
     }
   }
   renderWall()
-  console.log(m)
 }
 
 function delay(time) {
@@ -460,7 +459,6 @@ function compare( a, b ) {
 }
 
 function exportPathFile(){
-  // console.log(historyHumanPositions)
   path = historyHumanPositions
   const jsonData = JSON.stringify({ path });
   const blob = new Blob([jsonData], { type: 'application/json' });
@@ -475,6 +473,6 @@ function addToHistoryPositions(idCircle, idMember){
   nameMember = ["hleft", "hright", "lright", "lleft"]
   const last = historyHumanPositions.slice(-1)[0]
   copy = {...last}
-  copy[nameMember[idMember]] = idCircle
+  copy[nameMember[idMember]] = idCircle+1
   historyHumanPositions.push(copy)
 }
