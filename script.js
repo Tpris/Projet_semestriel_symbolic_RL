@@ -452,9 +452,13 @@ function moveHuman(move){
       x = positionsCircles[ind].x
       y = positionsCircles[ind].y
       if(checkContraints(x,y)){
-        human[i].x = x
-        human[i].y = y
-        centreDeGravite()
+        if((human[i].x != x || human[i].y != y)){
+          human[i].x = x
+          human[i].y = y
+          centreDeGravite()
+          addToHistoryPositions(ind, idCurrentMember)
+          addToCanvasHistory()
+        }
       } else{
         alert("Error : illegal move")
         return false
