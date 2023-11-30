@@ -29,6 +29,7 @@ let historyHumanPositions = [{"hleft": null,
                               "hright": null,
                               "lleft" : null,
                               "lright" : null}]
+let historyCanvas = []
 
 let center = canvas.width / 2;
 class pos {
@@ -156,6 +157,7 @@ function deletePositionFile() {
 
 
 function createWall() {
+  historyCanvas = []
   historyHumanPositions = [{"hleft": null,
                             "hright": null,
                             "lleft" : null,
@@ -314,6 +316,7 @@ canvas.addEventListener("click", function (event) {
           centreDeGravite();
           indCircle = circles.indexOf(circle)
           addToHistoryPositions(indCircle, idCurrentMember)
+          addToCanvasHistory()
 
           if (!win && checkWin()) {
             win = true;
@@ -487,6 +490,11 @@ function exportPathFile(){
   a.href = url;
   a.download = 'path.json';
   a.click();
+  addToCanvasHistory()
+  const downloadImg =  confirm("Voulez-vous télécharger les images du parcours ?");
+  if(downloadImg){
+    downloadAllCanvas()
+  }
 }
 
 function addToHistoryPositions(idCircle, idMember){
@@ -495,4 +503,21 @@ function addToHistoryPositions(idCircle, idMember){
   copy = {...last}
   copy[nameMember[idMember]] = idCircle+1
   historyHumanPositions.push(copy)
+}
+
+function addToCanvasHistory(){
+  historyCanvas.push(canvas.toDataURL())
+}
+
+function exportUniqueImage(url){
+  let a = document.createElement('a');
+  a.href = url;
+  a.download = "img.png";
+  a.click();
+}
+
+function downloadAllCanvas(){
+  for(c of historyCanvas){
+    exportUniqueImage(c)
+  }
 }
