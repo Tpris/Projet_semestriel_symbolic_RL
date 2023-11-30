@@ -436,8 +436,6 @@ function uploadPathFile(){
           legal_move = moveHuman(move)
         }
       });
-
-      console.log(pathFile)
     };
     reader.readAsText(file);
   };
@@ -520,4 +518,58 @@ function downloadAllCanvas(){
   for(c of historyCanvas){
     exportUniqueImage(c)
   }
+}
+
+
+/////////////////////////////////////
+//                                 //
+//          URL HANDLER            //
+//                                 //
+/////////////////////////////////////
+
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+
+for (const [key, value] of urlParams) {
+  switch (key) {
+    case 'wall':
+      console.log(value);
+
+      positionsCircles = []
+      const data = JSON.parse(value);
+      const positionFile  = data.wall;
+      console.log(data.wall)
+      positionFile.forEach((position, index) => {
+        addToPositionCircleList(position.x, canvas.height - position.y)
+      });
+      renderWall();
+      break;
+    case 'initPos':
+      const data3 = JSON.parse(value)
+      x_gap = human[4].x - data3.x
+      y_gap = human[4].y - (canvas.height - data3.y)
+      for (let i = 0; i < 4; i++) {
+        human[i].x = human[i].x - x_gap
+        human[i].y = human[i].y - y_gap
+      }      
+      human[4].x = data3.x
+      human[4].y = canvas.height - data3.y
+      break;
+    case 'run':
+        console.log('ruuuuuuun');
+        break;
+  }
+}
+
+if(urlParams.has('path')){
+  const value = urlParams.get('path')
+  const data2 = JSON.parse(value);
+  const pathFile  = data2.path;
+  let legal_move = true;
+  pathFile.forEach(async (move, index) => {
+    await delay(1000*index)
+    if(legal_move){
+      legal_move = moveHuman(move)
+    }
+  });
 }
