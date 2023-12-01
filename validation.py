@@ -7,9 +7,9 @@ from copy import deepcopy
 MAX_LENGTH = 20
 
 path_file = "path_001.json"
-wall_file = "wall_test.json"
+wall_file = "wall_001.json"
 output_id = "out"
-wingspan = 5000
+wingspan = 300
 
 
 
@@ -232,7 +232,7 @@ def legal_moves(step,wall):
         for i in range(len(wall)):
             next_step = deepcopy(step)
             next_step[member] = i
-            if valid_steps([next_step],wall) and valid_step_transition([step,next_step],wall):
+            if valid_step(next_step,wall) and valid_step_transition([step,next_step],wall):
                 moves.append(next_step)
     return moves
 

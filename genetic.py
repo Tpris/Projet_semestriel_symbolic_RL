@@ -4,7 +4,7 @@ POP_SIZE = 200
 NUM_PARENTS = 50
 MUTATION_PROBA = 0.2
 MUTATION_FACTOR = 0.5
-GENERATIONS = 10
+GENERATIONS = 30
 
 
 
@@ -25,7 +25,8 @@ GENERATIONS = 10
 def fitness(path, wall):
     hleft, hright, _,_ = body_position(path[-1],wall)
 
-
+    if is_winning_path(path, wall):
+        print("WINNNNN")
     if valid_path(path, wall):
         return (distance(len(wall)-1,hright)+distance(len(wall)-1,hleft))/2 
     return float('inf')
@@ -66,14 +67,9 @@ def fit_population(population, wall):
 #     return selected_parents
 
 
-def select_parents(population, fitness_scores):
+def select_parents(population):
 
-    ranked_population = sorted(range(len(population)), key=lambda k: fitness_scores[k], reverse=True)
-    
-    selection_probs = [1 / (rank + 1) for rank in range(len(population))]
-    selected_indices = choices(ranked_population, weights=selection_probs, k=NUM_PARENTS)
-    selected_parents = [population[i] for i in selected_indices]
-
+    selected_parents = population[:NUM_PARENTS]
     return selected_parents
 
 
@@ -109,20 +105,24 @@ def mutate(population, wall):
 def algo_genetique():
     timer = time.time()
     population = init_population(wall)
-
+    population.sort(key=lambda x: fitness(x, wall))
     for generation in range(GENERATIONS):
         print(f"Generation : {generation}")
-        fitness_scores = fit_population(population, wall)
-        parents = select_parents(population, fitness_scores)
-        offspring = breed_population(parents)
+        new_population = population[:NUM_PARENTS]
+        offspring = breed_population(new_population)
+        
         print(len(offspring))
-        offspring = [i for i in offspring if valid_path(i, wall)]
+        # offspring = [i for i in offspring if valid_path(i, wall)]
         print(len(offspring))
-        offspring = fill_population(offspring, wall)
         offspring = mutate(offspring, wall)
-        population = offspring
+        new_population.extend(offspring)
+        new_population = fill_population(new_population, wall)
+   
+        population = new_population
+        population.sort(key=lambda x: fitness(x, wall))
 
-    best_solution = population[fitness_scores.index(max(fitness_scores))]
+    print(fit_population(population, wall))
+    best_solution = population[0]
     print(best_solution)
     time_taken = time.time() - timer
     print(time_taken)
