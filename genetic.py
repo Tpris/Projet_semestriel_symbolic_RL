@@ -24,11 +24,10 @@ GENERATIONS = 10
 
 def fitness(path, wall):
     hleft, hright, _,_ = body_position(path[-1],wall)
-    x = wall[-1]['x']
-    y = wall[-1]['y']
+
 
     if valid_path(path, wall):
-        return (distance(x,y,hright['x'],hright['y'])+distance(x,y,hleft['x'],hleft['y']))/2 
+        return (distance(len(wall)-1,hright)+distance(len(wall)-1,hleft))/2 
     return float('inf')
 
 def crossover(path1, path2):
@@ -70,6 +69,7 @@ def fit_population(population, wall):
 def select_parents(population, fitness_scores):
 
     ranked_population = sorted(range(len(population)), key=lambda k: fitness_scores[k], reverse=True)
+    
     selection_probs = [1 / (rank + 1) for rank in range(len(population))]
     selected_indices = choices(ranked_population, weights=selection_probs, k=NUM_PARENTS)
     selected_parents = [population[i] for i in selected_indices]
@@ -115,7 +115,9 @@ def algo_genetique():
         fitness_scores = fit_population(population, wall)
         parents = select_parents(population, fitness_scores)
         offspring = breed_population(parents)
+        print(len(offspring))
         offspring = [i for i in offspring if valid_path(i, wall)]
+        print(len(offspring))
         offspring = fill_population(offspring, wall)
         offspring = mutate(offspring, wall)
         population = offspring

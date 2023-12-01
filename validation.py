@@ -7,7 +7,7 @@ from copy import deepcopy
 MAX_LENGTH = 20
 
 path_file = "path_001.json"
-wall_file = "wall_001.json"
+wall_file = "wall_test.json"
 output_id = "out"
 wingspan = 5000
 
@@ -72,7 +72,7 @@ def valid_path(path,wall):
     if not valid_steps(path,wall):
         #print(f"At least one step of the path is not valid")
         return False
-    if not valid_step_distances(path,wall):
+    if not valid_step_transition(path,wall):
         #print(f"At least one transition between two steps of the path is not valid")
         return False
 
@@ -105,12 +105,30 @@ def valid_start(path):
 #         return dist
 #     return distance_dictionnary[convert(xa,ya,xb,yb)]
 
-def distance(xa,ya,xb,yb):
+def distance(p1,p2):
     """Compute the distance between two points a and b 
 
     Args:
         a,b (dict): a = {x:k,y:l} etc
     """
+    if p1 is None and p2 is None:
+        return 0
+    if p1 is None :
+        xa = wall[p2]['x']
+        ya = 0
+        xb = wall[p2]['x']
+        yb = wall[p2]['y']
+    elif p2 is None :
+        xb = wall[p1]['x']
+        yb = 0
+        xa = wall[p1]['x']
+        ya = wall[p1]['y']
+    else :
+        xa = wall[p1]['x']
+        ya = wall[p1]['y']
+        xb = wall[p2]['x']
+        yb = wall[p2]['y']
+
     return sqrt((xa-xb)**2+(ya-yb)**2)
 
 
@@ -121,7 +139,7 @@ def is_started(positions):
     return False
 
 def is_on_earth(positions):
-    return positions[2]['y'] == 0 and positions[3]['y'] == 0
+    return positions[2] == None and positions[3] == None
 
 def body_position(step,wall):
     """Using a wall give the position of each member for a given step  
@@ -129,17 +147,10 @@ def body_position(step,wall):
     Args:
         step (dict), wall (list)
     """
-    members = []
-    for member in step.keys():
-        if step[member] == None:
-            members.append({'x' : 0, 'y' : 0})
-        else : 
-            members.append(wall[step[member]-1])
-
-    hleft_position = members[0]
-    hright_position = members[1]
-    lleft_position = members[2]
-    lright_position = members[3]
+    hleft_position = step['hleft']
+    hright_position = step['hright']
+    lleft_position = step['lleft']
+    lright_position = step['lright']
 
     return hleft_position, hright_position, lleft_position, lright_position
 
@@ -147,15 +158,24 @@ def body_position(step,wall):
 
 def valid_wingspans(positions):
     for pos1, pos2 in combinations(positions, 2):
-        if distance(pos1['x'], pos1['y'],pos2['x'],pos2['y']) > wingspan:
+        if distance(pos1, pos2) > wingspan:
             return False
     return True
 
 def valid_step_positions(step,wall):
     """Check if the position of the member of the body is valid (Hands above feet) """
+
     positions = body_position(step, wall)
-    highest_foot = max(positions[2]['y'],positions[3]['y'])
-    return positions[0]['y'] > highest_foot and positions[1]['y'] > highest_foot or is_on_earth(positions)
+
+    hleft_height = 0.1 if positions[0] is None else wall[positions[0]]['y']
+    hright_height = 0.1 if positions[1] is None else wall[positions[1]]['y']
+    lleft_height = 0 if positions[2] is None else wall[positions[2]]['y']
+    lright_height = 0 if positions[3] is None else wall[positions[3]]['y']
+
+    highest_foot = max(lleft_height,lright_height)
+    lowest_hand = min(hleft_height,hright_height)
+
+    return lowest_hand > highest_foot 
 
 def valid_step_wingspan(step, wall):
     positions = body_position(step, wall)
@@ -174,7 +194,7 @@ def valid_steps(path,wall):
     return True
 
 
-def valid_step_distances(path,wall):
+def valid_step_transition(path,wall):
     if len(path) < 1:
         return valid_start(path)
     
@@ -182,9 +202,16 @@ def valid_step_distances(path,wall):
 
         current_step = path[step_index]
         next_step = path[step_index+1]
+
         differences = sum(1 for key in current_step if current_step[key] != next_step[key])
         if differences != 1:
             return False
+        
+        differences = sum(1 for key in current_step if (current_step[key] != None) and (next_step[key] == None))
+        if differences != 0:
+            return False
+        
+
     return True
 
 
@@ -205,7 +232,7 @@ def legal_moves(step,wall):
         for i in range(len(wall)):
             next_step = deepcopy(step)
             next_step[member] = i
-            if valid_steps([next_step],wall) and valid_step_distances([step,next_step],wall):
+            if valid_steps([next_step],wall) and valid_step_transition([step,next_step],wall):
                 moves.append(next_step)
     return moves
 
