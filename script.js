@@ -25,6 +25,11 @@ let idCurrentCircle = null;
 let finalCircle = null;
 let selected = false;
 let idCurrentMember = null;
+let historyHumanPositions = [{"hleft": null,
+                              "hright": null,
+                              "lleft" : null,
+                              "lright" : null}]
+let historyCanvas = []
 
 let center = canvas.width / 2;
 class pos {
@@ -77,8 +82,6 @@ function drawHuman() {
   feet = new Path2D();
   feet.ellipse(human[3].x-16, human[3].y, 5, 8, 0, 0, 2 * Math.PI);
   ctx.fill(feet);
-
-
 
   // body
   body = new Path2D();
@@ -154,6 +157,11 @@ function deletePositionFile() {
 
 
 function createWall() {
+  historyCanvas = []
+  historyHumanPositions = [{"hleft": null,
+                            "hright": null,
+                            "lleft" : null,
+                            "lright" : null}]
   human = [
     new pos(center - 70, canvas.height - 120),
     new pos(center + 70, canvas.height - 120),
@@ -170,7 +178,7 @@ function createWall() {
       positionsCircles.push(new pos(x, y));
     }
   }
-  positionsCircles.sort( compare );
+  // positionsCircles.sort( compare );
   renderWall();
 }
 
@@ -267,6 +275,14 @@ canvas.addEventListener("mousedown", function (event) {
 
 canvas.onmousemove = function (event) {
   if (isBody) {
+    if(historyHumanPositions.length == 1){
+      x_gap = human[4].x - event.offsetX
+      y_gap = human[4].y - event.offsetY
+      for (let i = 0; i < 4; i++) {
+        human[i].x = human[i].x - x_gap
+        human[i].y = human[i].y - y_gap
+      }
+    }
     human[4].x = event.offsetX;
     human[4].y = event.offsetY;
     renderWall();
@@ -298,6 +314,10 @@ canvas.addEventListener("click", function (event) {
           human[idCurrentMember].x = event.offsetX;
           human[idCurrentMember].y = event.offsetY;
           centreDeGravite();
+          indCircle = circles.indexOf(circle)
+          addToHistoryPositions(indCircle, idCurrentMember)
+          addToCanvasHistory()
+
           if (!win && checkWin()) {
             win = true;
             renderWall();
@@ -409,12 +429,13 @@ function uploadPathFile(){
       const content = e.target.result;
       const data = JSON.parse(content);
       const pathFile  = data.path;
+      let legal_move = true;
       pathFile.forEach(async (move, index) => {
         await delay(1000*index)
-        moveHuman(move)
+        if(legal_move){
+          legal_move = moveHuman(move)
+        }
       });
-
-      console.log(pathFile)
     };
     reader.readAsText(file);
   };
@@ -426,14 +447,26 @@ function moveHuman(move){
 
   for (let i = 0; i < 4; i++) {
     if(m[i] != null && m[i] != 0){
+      idCurrentMember=i
       ind = m[i]-1
-      human[i].x = positionsCircles[ind].x
-      human[i].y = positionsCircles[ind].y
-      centreDeGravite()
+      x = positionsCircles[ind].x
+      y = positionsCircles[ind].y
+      if(checkContraints(x,y)){
+        if((human[i].x != x || human[i].y != y)){
+          human[i].x = x
+          human[i].y = y
+          centreDeGravite()
+          addToHistoryPositions(ind, idCurrentMember)
+          addToCanvasHistory()
+        }
+      } else{
+        alert("Error : illegal move")
+        return false
+      }
     }
   }
   renderWall()
-  console.log(m)
+  return true
 }
 
 function delay(time) {
@@ -448,4 +481,99 @@ function compare( a, b ) {
     return -1;
   }
   return 0;
+}
+
+function exportPathFile(){
+  path = historyHumanPositions
+  const jsonData = JSON.stringify({ path });
+  const blob = new Blob([jsonData], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'path.json';
+  a.click();
+  addToCanvasHistory()
+  const downloadImg =  confirm("Voulez-vous télécharger les images du parcours ?");
+  if(downloadImg){
+    downloadAllCanvas()
+  }
+}
+
+function addToHistoryPositions(idCircle, idMember){
+  nameMember = ["hleft", "hright", "lright", "lleft"]
+  const last = historyHumanPositions.slice(-1)[0]
+  copy = {...last}
+  copy[nameMember[idMember]] = idCircle+1
+  historyHumanPositions.push(copy)
+}
+
+function addToCanvasHistory(){
+  historyCanvas.push(canvas.toDataURL())
+}
+
+function exportUniqueImage(url){
+  let a = document.createElement('a');
+  a.href = url;
+  a.download = "img.png";
+  a.click();
+}
+
+function downloadAllCanvas(){
+  for(c of historyCanvas){
+    exportUniqueImage(c)
+  }
+}
+
+
+/////////////////////////////////////
+//                                 //
+//          URL HANDLER            //
+//                                 //
+/////////////////////////////////////
+
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+
+for (const [key, value] of urlParams) {
+  switch (key) {
+    case 'wall':
+      console.log(value);
+
+      positionsCircles = []
+      const data = JSON.parse(value);
+      const positionFile  = data.wall;
+      console.log(data.wall)
+      positionFile.forEach((position, index) => {
+        addToPositionCircleList(position.x, canvas.height - position.y)
+      });
+      renderWall();
+      break;
+    case 'initPos':
+      const data3 = JSON.parse(value)
+      x_gap = human[4].x - data3.x
+      y_gap = human[4].y - (canvas.height - data3.y)
+      for (let i = 0; i < 4; i++) {
+        human[i].x = human[i].x - x_gap
+        human[i].y = human[i].y - y_gap
+      }      
+      human[4].x = data3.x
+      human[4].y = canvas.height - data3.y
+      break;
+    case 'run':
+        console.log('ruuuuuuun');
+        break;
+  }
+}
+
+if(urlParams.has('path')){
+  const value = urlParams.get('path')
+  const data2 = JSON.parse(value);
+  const pathFile  = data2.path;
+  let legal_move = true;
+  pathFile.forEach(async (move, index) => {
+    await delay(1000*index)
+    if(legal_move){
+      legal_move = moveHuman(move)
+    }
+  });
 }
