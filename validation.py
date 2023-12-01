@@ -12,6 +12,7 @@ output_id = "out"
 wingspan = 1000
 
 
+
 def json_to_path(file):
     """Create a path using a json file
 
@@ -60,13 +61,9 @@ def wall_to_json(wall):
     with open(f"wall_{output_id}.json", "w") as outfile:
         outfile.write(json_object)
 
-
 path = json_to_path(path_file)
-print(path)
-path_to_json(path)
 wall = json_to_wall(wall_file)
-print(wall)
-wall_to_json(wall)
+
 
 def valid_path(path,wall):
     if not valid_start(path):
@@ -116,6 +113,16 @@ def distance(xa,ya,xb,yb):
 #     """
 #     return sqrt((xa-xb)**2+(ya-yb)**2)
 
+
+def is_started(positions):
+    for position in positions:
+        if position['x'] != 0 or position['y'] != 0:
+            return True
+    return False
+
+def is_on_earth(positions):
+    return positions[2]['y'] == 0 and positions[3]['y'] == 0
+
 def body_position(step,wall):
     """Using a wall give the position of each member for a given step  
 
@@ -145,10 +152,10 @@ def valid_wingspans(positions):
     return True
 
 def valid_step_positions(step,wall):
-    """Check if the position of the member of the body is valid (Hands above foot) """
+    """Check if the position of the member of the body is valid (Hands above feet) """
     positions = body_position(step, wall)
-    highest_leg = max(positions[2]['y'],positions[3]['y'])
-    return positions[0]['y'] > highest_leg and positions[1]['y'] > highest_leg
+    highest_foot = max(positions[2]['y'],positions[3]['y'])
+    return positions[0]['y'] > highest_foot and positions[1]['y'] > highest_foot or is_on_earth(positions)
 
 def valid_step_wingspan(step, wall):
     positions = body_position(step, wall)
@@ -168,19 +175,18 @@ def valid_steps(path,wall):
 
 
 def valid_step_distances(path,wall):
-    positions = []
-    if len(path) > 1:
-        for step_index in range(len(path)-1):
-
-            positions = list(body_position(path[step_index], wall))
-            
-            for i in body_position(path[step_index+1], wall) : 
-                positions.append(i)
-            if not valid_wingspans(positions):
-                return False
-    else :
+    if len(path) < 1:
         return valid_start(path)
+    
+    for step_index in range(len(path)-1):
+
+        current_step = path[step_index]
+        next_step = path[step_index+1]
+        differences = sum(1 for key in current_step if current_step[key] != next_step[key])
+        if differences != 1:
+            return False
     return True
+
 
 # print(valid_path(path,wall))
 
@@ -192,7 +198,6 @@ def is_winning_path(path,wall):
 
 # print(is_winning_path(path,wall))
 
-
 def legal_moves(step,wall):
     moves = []
     next_step = deepcopy(step)
@@ -200,16 +205,16 @@ def legal_moves(step,wall):
         for i in range(len(wall)):
             next_step = deepcopy(step)
             next_step[member] = i
-
-            if valid_steps([step,next_step],wall) and valid_step_distances([step,next_step],wall):
+            if valid_steps([next_step],wall) and valid_step_distances([step,next_step],wall):
                 moves.append(next_step)
-
     return moves
 
 
 def random_extend(path,wall):
     step = path[-1]
-    moves = legal_moves(step,wall)
+    moves = legal_moves(step, wall)
+    if len(moves) == 0:
+        return path
     path.append(choice(moves))
     return path
 
