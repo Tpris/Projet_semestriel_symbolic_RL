@@ -74,3 +74,16 @@
     border-radius: 5px;
     cursor: pointer;
   }
+
+  #geneticPath {
+    position: fixed;
+    top: 10px;
+    right: 820px;
+    float: left;
+    background-color: #008CBA;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
