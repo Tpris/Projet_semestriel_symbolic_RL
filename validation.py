@@ -9,7 +9,7 @@ MAX_LENGTH = 20
 path_file = "path_001.json"
 wall_file = "wall_001.json"
 output_id = "out"
-wingspan = 300
+wingspan = 3000
 
 
 def json_to_path(file):
@@ -100,7 +100,7 @@ def valid_start(path):
 #         return dist
 #     return distance_dictionnary[convert(xa,ya,xb,yb)]
 
-def distance(p1,p2):
+def distance(p1,p2,wall):
     """Compute the distance between two points a and b 
 
     Args:
@@ -151,9 +151,9 @@ def body_position(step,wall):
 
 
 
-def valid_wingspans(positions):
+def valid_wingspans(positions,wall):
     for pos1, pos2 in combinations(positions, 2):
-        if distance(pos1, pos2) > wingspan:
+        if distance(pos1, pos2, wall) > wingspan:
             return False
     return True
 
@@ -174,7 +174,7 @@ def valid_step_positions(step,wall):
 
 def valid_step_wingspan(step, wall):
     positions = body_position(step, wall)
-    return valid_wingspans(positions)
+    return valid_wingspans(positions,wall)
 
     
 def valid_step(step,wall):
@@ -229,6 +229,8 @@ def legal_moves(step,wall):
             next_step[member] = i
             if valid_step(next_step,wall) and valid_step_transition([step,next_step],wall):
                 moves.append(next_step)
+    if moves == []:
+        print("The wingspan is probably to short for this wall")
     return moves
 
 

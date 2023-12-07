@@ -4,7 +4,7 @@ POP_SIZE = 200
 NUM_PARENTS = 50
 MUTATION_PROBA = 0.2
 MUTATION_FACTOR = 0.5
-GENERATIONS = 30
+GENERATIONS = 2
 
 
 
@@ -28,7 +28,7 @@ def fitness(path, wall):
     if is_winning_path(path, wall):
         print("WINNNNN")
     if valid_path(path, wall):
-        return (distance(len(wall)-1,hright)+distance(len(wall)-1,hleft))/2 
+        return (distance(len(wall)-1,hright,wall)+distance(len(wall)-1,hleft,wall))/2 
     return float('inf')
 
 def crossover(path1, path2):
@@ -97,8 +97,8 @@ def mutate(population, wall):
             mutation_index = randint(int(len(path) * MUTATION_FACTOR), len(path) - 1)
             mutation_size = randint(mutation_index, MAX_LENGTH)
             path = path[:mutation_index]
-            # for i in range(len(path), mutation_size+1):
-            #     path = random_extend(path, wall)
+            for i in range(len(path), mutation_size+1):
+                path = random_extend(path, wall)
     return population
 
 
