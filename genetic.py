@@ -97,12 +97,12 @@ def mutate(population, wall):
             mutation_index = randint(int(len(path) * MUTATION_FACTOR), len(path) - 1)
             mutation_size = randint(mutation_index, MAX_LENGTH)
             path = path[:mutation_index]
-            while len(path) <= mutation_size:
-                path = random_extend(path, wall)
+            # for i in range(len(path), mutation_size+1):
+            #     path = random_extend(path, wall)
     return population
 
 
-def algo_genetique():
+def algo_genetique(wall):
     timer = time.time()
     population = init_population(wall)
     population.sort(key=lambda x: fitness(x, wall))
@@ -111,9 +111,7 @@ def algo_genetique():
         new_population = population[:NUM_PARENTS]
         offspring = breed_population(new_population)
         
-        print(len(offspring))
         # offspring = [i for i in offspring if valid_path(i, wall)]
-        print(len(offspring))
         offspring = mutate(offspring, wall)
         new_population.extend(offspring)
         new_population = fill_population(new_population, wall)
@@ -128,5 +126,5 @@ def algo_genetique():
     print(time_taken)
     return best_solution
 
-
-path_to_json(algo_genetique())
+if __name__ == "__main__":
+    path_to_json(algo_genetique(wall))

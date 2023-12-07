@@ -12,7 +12,6 @@ output_id = "out"
 wingspan = 300
 
 
-
 def json_to_path(file):
     """Create a path using a json file
 
@@ -49,8 +48,6 @@ def json_to_wall(file):
     data = json.load(f)
     return data['wall']
 
-
-
 def wall_to_json(wall):
     """Create a json file reprensenting a wall 
 
@@ -61,9 +58,7 @@ def wall_to_json(wall):
     with open(f"wall_{output_id}.json", "w") as outfile:
         outfile.write(json_object)
 
-path = json_to_path(path_file)
 wall = json_to_wall(wall_file)
-
 
 def valid_path(path,wall):
     if not valid_start(path):
@@ -249,8 +244,8 @@ def random_extend(path,wall):
 def create_random_path(wall):
     path = []
     path.append({'hleft': None, 'hright': None, 'lleft': None, 'lright': None})
-    step_lengh = randint(2,MAX_LENGTH-1)
-    for i in range(step_lengh):
+    step_length = randint(2,MAX_LENGTH-1)
+    for i in range(step_length):
         path = random_extend(path,wall)
     return path
 
