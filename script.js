@@ -577,3 +577,12 @@ if(urlParams.has('path')){
     }
   });
 }
+
+
+async function getData() {
+  const response = await fetch('http://127.0.0.1:5000/api/data')
+
+  const data =  response.json()
+  console.log(data)
+}
+
