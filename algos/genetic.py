@@ -1,4 +1,4 @@
-from validation import *
+from algos.validation import *
 import time
 POP_SIZE = 200
 NUM_PARENTS = 50
