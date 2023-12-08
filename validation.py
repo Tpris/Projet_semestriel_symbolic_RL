@@ -5,11 +5,10 @@ from random import randint, choice, choices, random
 from copy import deepcopy
 
 MAX_LENGTH = 20
-
-path_file = "path_001.json"
-wall_file = "wall_001.json"
-output_id = "out"
-wingspan = 3000
+PATH_FILE = None
+WALL_FILE = None
+OUTPUT_ID = "out"
+WINGSPAN = 3000
 
 
 def json_to_path(file):
@@ -32,7 +31,7 @@ def path_to_json(path):
         path (list): a path you want to convert to json
     """
     json_object = json.dumps({'path':path}, indent=4)
-    with open(f"path_{output_id}.json", "w") as outfile:
+    with open(f"path_{OUTPUT_ID}.json", "w") as outfile:
         outfile.write(json_object)
 
 def json_to_wall(file):
@@ -55,10 +54,10 @@ def wall_to_json(wall):
         wall (list): a wall you want to convert to json
     """
     json_object = json.dumps({'wall':wall}, indent=4)
-    with open(f"wall_{output_id}.json", "w") as outfile:
+    with open(f"wall_{OUTPUT_ID}.json", "w") as outfile:
         outfile.write(json_object)
 
-wall = json_to_wall(wall_file)
+#wall = json_to_wall(WALL_FILE)
 
 def valid_path(path,wall):
     if not valid_start(path):
@@ -153,7 +152,7 @@ def body_position(step,wall):
 
 def valid_wingspans(positions,wall):
     for pos1, pos2 in combinations(positions, 2):
-        if distance(pos1, pos2, wall) > wingspan:
+        if distance(pos1, pos2, wall) > WINGSPAN:
             return False
     return True
 
