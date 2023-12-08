@@ -9,7 +9,7 @@ MAX_LENGTH = 20
 path_file = "path_001.json"
 wall_file = "wall_001.json"
 output_id = "out"
-wingspan = 1000
+wingspan = 3000
 
 
 def json_to_path(file):
@@ -48,8 +48,6 @@ def json_to_wall(file):
     data = json.load(f)
     return data['wall']
 
-
-
 def wall_to_json(wall):
     """Create a json file reprensenting a wall 
 
@@ -60,13 +58,7 @@ def wall_to_json(wall):
     with open(f"wall_{output_id}.json", "w") as outfile:
         outfile.write(json_object)
 
-
-path = json_to_path(path_file)
-print(path)
-path_to_json(path)
 wall = json_to_wall(wall_file)
-print(wall)
-wall_to_json(wall)
 
 def valid_path(path,wall):
     if not valid_start(path):
@@ -75,7 +67,7 @@ def valid_path(path,wall):
     if not valid_steps(path,wall):
         #print(f"At least one step of the path is not valid")
         return False
-    if not valid_step_distances(path,wall):
+    if not valid_step_transition(path,wall):
         #print(f"At least one transition between two steps of the path is not valid")
         return False
 
@@ -89,24 +81,10 @@ def valid_start(path):
     """
     return path[0] == {'hleft': None, 'hright': None, 'lleft': None, 'lright': None}
 
-distance_dictionnary = {}
+# distance_dictionnary = {}
 
-def convert(xa,ya,xb,yb):
-    return str(xa) + "," + str(ya) + "," + str(xb)+ "," + str(yb)
-
-def distance(xa,ya,xb,yb):
-    """Compute the distance between two points a and b 
-
-    Args:
-        a,b (dict): a = {x:k,y:l} etc
-    """
-    keys = distance_dictionnary.keys()
-    if convert(xa,ya,xb,yb) not in keys :
-        dist = sqrt((xa-xb)**2+(ya-yb)**2)
-        distance_dictionnary[convert(xa,ya,xb,yb)]=dist
-        distance_dictionnary[convert(xb,yb,xa,ya)]=dist
-        return dist
-    return distance_dictionnary[convert(xa,ya,xb,yb)]
+# def convert(xa,ya,xb,yb):
+#     return str(xa) + "," + str(ya) + "," + str(xb)+ "," + str(yb)
 
 # def distance(xa,ya,xb,yb):
 #     """Compute the distance between two points a and b 
@@ -114,7 +92,49 @@ def distance(xa,ya,xb,yb):
 #     Args:
 #         a,b (dict): a = {x:k,y:l} etc
 #     """
-#     return sqrt((xa-xb)**2+(ya-yb)**2)
+#     keys = distance_dictionnary.keys()
+#     if convert(xa,ya,xb,yb) not in keys :
+#         dist = sqrt((xa-xb)**2+(ya-yb)**2)
+#         distance_dictionnary[convert(xa,ya,xb,yb)]=dist
+#         distance_dictionnary[convert(xb,yb,xa,ya)]=dist
+#         return dist
+#     return distance_dictionnary[convert(xa,ya,xb,yb)]
+
+def distance(p1,p2,wall):
+    """Compute the distance between two points a and b 
+
+    Args:
+        a,b (dict): a = {x:k,y:l} etc
+    """
+    if p1 is None and p2 is None:
+        return 0
+    if p1 is None :
+        xa = wall[p2]['x']
+        ya = 0
+        xb = wall[p2]['x']
+        yb = wall[p2]['y']
+    elif p2 is None :
+        xb = wall[p1]['x']
+        yb = 0
+        xa = wall[p1]['x']
+        ya = wall[p1]['y']
+    else :
+        xa = wall[p1]['x']
+        ya = wall[p1]['y']
+        xb = wall[p2]['x']
+        yb = wall[p2]['y']
+
+    return sqrt((xa-xb)**2+(ya-yb)**2)
+
+
+def is_started(positions):
+    for position in positions:
+        if position['x'] != 0 or position['y'] != 0:
+            return True
+    return False
+
+def is_on_earth(positions):
+    return positions[2] == None and positions[3] == None
 
 def body_position(step,wall):
     """Using a wall give the position of each member for a given step  
@@ -122,37 +142,39 @@ def body_position(step,wall):
     Args:
         step (dict), wall (list)
     """
-    members = []
-    for member in step.keys():
-        if step[member] == None:
-            members.append({'x' : 0, 'y' : 0})
-        else : 
-            members.append(wall[step[member]-1])
-
-    hleft_position = members[0]
-    hright_position = members[1]
-    lleft_position = members[2]
-    lright_position = members[3]
+    hleft_position = step['hleft']
+    hright_position = step['hright']
+    lleft_position = step['lleft']
+    lright_position = step['lright']
 
     return hleft_position, hright_position, lleft_position, lright_position
 
 
 
-def valid_wingspans(positions):
+def valid_wingspans(positions,wall):
     for pos1, pos2 in combinations(positions, 2):
-        if distance(pos1['x'], pos1['y'],pos2['x'],pos2['y']) > wingspan:
+        if distance(pos1, pos2, wall) > wingspan:
             return False
     return True
 
 def valid_step_positions(step,wall):
-    """Check if the position of the member of the body is valid (Hands above foot) """
+    """Check if the position of the member of the body is valid (Hands above feet) """
+
     positions = body_position(step, wall)
-    highest_leg = max(positions[2]['y'],positions[3]['y'])
-    return positions[0]['y'] > highest_leg and positions[1]['y'] > highest_leg
+
+    hleft_height = 0.1 if positions[0] is None else wall[positions[0]]['y']
+    hright_height = 0.1 if positions[1] is None else wall[positions[1]]['y']
+    lleft_height = 0 if positions[2] is None else wall[positions[2]]['y']
+    lright_height = 0 if positions[3] is None else wall[positions[3]]['y']
+
+    highest_foot = max(lleft_height,lright_height)
+    lowest_hand = min(hleft_height,hright_height)
+
+    return lowest_hand > highest_foot 
 
 def valid_step_wingspan(step, wall):
     positions = body_position(step, wall)
-    return valid_wingspans(positions)
+    return valid_wingspans(positions,wall)
 
     
 def valid_step(step,wall):
@@ -167,20 +189,26 @@ def valid_steps(path,wall):
     return True
 
 
-def valid_step_distances(path,wall):
-    positions = []
-    if len(path) > 1:
-        for step_index in range(len(path)-1):
-
-            positions = list(body_position(path[step_index], wall))
-            
-            for i in body_position(path[step_index+1], wall) : 
-                positions.append(i)
-            if not valid_wingspans(positions):
-                return False
-    else :
+def valid_step_transition(path,wall):
+    if len(path) < 1:
         return valid_start(path)
+    
+    for step_index in range(len(path)-1):
+
+        current_step = path[step_index]
+        next_step = path[step_index+1]
+
+        differences = sum(1 for key in current_step if current_step[key] != next_step[key])
+        if differences != 1:
+            return False
+        
+        differences = sum(1 for key in current_step if (current_step[key] != None) and (next_step[key] == None))
+        if differences != 0:
+            return False
+        
+
     return True
+
 
 # print(valid_path(path,wall))
 
@@ -192,7 +220,6 @@ def is_winning_path(path,wall):
 
 # print(is_winning_path(path,wall))
 
-
 def legal_moves(step,wall):
     moves = []
     next_step = deepcopy(step)
@@ -200,16 +227,18 @@ def legal_moves(step,wall):
         for i in range(len(wall)):
             next_step = deepcopy(step)
             next_step[member] = i
-
-            if valid_steps([step,next_step],wall) and valid_step_distances([step,next_step],wall):
+            if valid_step(next_step,wall) and valid_step_transition([step,next_step],wall):
                 moves.append(next_step)
-
+    if moves == []:
+        print("The wingspan is probably to short for this wall")
     return moves
 
 
 def random_extend(path,wall):
     step = path[-1]
-    moves = legal_moves(step,wall)
+    moves = legal_moves(step, wall)
+    if len(moves) == 0:
+        return path
     path.append(choice(moves))
     return path
 
@@ -217,8 +246,8 @@ def random_extend(path,wall):
 def create_random_path(wall):
     path = []
     path.append({'hleft': None, 'hright': None, 'lleft': None, 'lright': None})
-    step_lengh = randint(2,MAX_LENGTH-1)
-    for i in range(step_lengh):
+    step_length = randint(2,MAX_LENGTH-1)
+    for i in range(step_length):
         path = random_extend(path,wall)
     return path
 

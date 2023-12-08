@@ -4,23 +4,32 @@ POP_SIZE = 200
 NUM_PARENTS = 50
 MUTATION_PROBA = 0.2
 MUTATION_FACTOR = 0.5
-GENERATIONS = 5
+GENERATIONS = 2
 
+
+
+# def fitness(path, wall):
+#     a = path[-1]["hleft"]
+#     b = path[-1]["hright"]
+#     if a == None:
+#         a = 0
+#     if b == None:
+#         b = 0
+#     if is_winning_path(path, wall):
+#         print("OMG")
+#         return 10*(1 - 0.9*(len(path) / MAX_LENGTH))
+#     if valid_path(path, wall):
+#         return  (a + b) / (2*len(wall))
+#     return 0
 
 def fitness(path, wall):
-    a = path[-1]["hleft"]
-    b = path[-1]["hright"]
-    if a == None:
-        a = 0
-    if b == None:
-        b = 0
-    if is_winning_path(path, wall):
-        print("OMG")
-        return 10*(1 - (len(path) / MAX_LENGTH))
-    if valid_path(path, wall):
-        return  (a + b) / (2*len(wall))
-    return 0
+    hleft, hright, _,_ = body_position(path[-1],wall)
 
+    if is_winning_path(path, wall):
+        print("WINNNNN")
+    if valid_path(path, wall):
+        return (distance(len(wall)-1,hright,wall)+distance(len(wall)-1,hleft,wall))/2 
+    return float('inf')
 
 def crossover(path1, path2):
     cut = randint(1, min(len(path1), len(path2)))
@@ -48,13 +57,19 @@ def fit_population(population, wall):
     return fitted_pop
 
 
-def select_parents(population, fitness_scores, wall):
-    selected_parents = []
+# def select_parents(population, fitness_scores):
+#     selected_parents = []
 
-    for _ in range(NUM_PARENTS):
-        selected_index = choices(range(len(population)), weights=fitness_scores)
-        selected_parents.append(population[selected_index[0]])
+#     for _ in range(NUM_PARENTS):
+#         selected_index = choices(range(len(population)), weights=fitness_scores)
+#         selected_parents.append(population[selected_index[0]])
 
+#     return selected_parents
+
+
+def select_parents(population):
+
+    selected_parents = population[:NUM_PARENTS]
     return selected_parents
 
 
@@ -82,30 +97,34 @@ def mutate(population, wall):
             mutation_index = randint(int(len(path) * MUTATION_FACTOR), len(path) - 1)
             mutation_size = randint(mutation_index, MAX_LENGTH)
             path = path[:mutation_index]
-            while len(path) <= mutation_size:
+            for i in range(len(path), mutation_size+1):
                 path = random_extend(path, wall)
     return population
 
 
-def algo_genetique():
+def algo_genetique(wall):
     timer = time.time()
     population = init_population(wall)
-
+    population.sort(key=lambda x: fitness(x, wall))
     for generation in range(GENERATIONS):
         print(f"Generation : {generation}")
-        fitness_scores = fit_population(population, wall)
-        parents = select_parents(population, fitness_scores, wall)
-        offspring = breed_population(parents)
-        offspring = [i for i in offspring if valid_path(i, wall)]
-        offspring = fill_population(offspring, wall)
+        new_population = population[:NUM_PARENTS]
+        offspring = breed_population(new_population)
+        
+        # offspring = [i for i in offspring if valid_path(i, wall)]
         offspring = mutate(offspring, wall)
-        population = offspring
+        new_population.extend(offspring)
+        new_population = fill_population(new_population, wall)
+   
+        population = new_population
+        population.sort(key=lambda x: fitness(x, wall))
 
-    best_solution = population[fitness_scores.index(max(fitness_scores))]
+    print(fit_population(population, wall))
+    best_solution = population[0]
     print(best_solution)
-    timer-=time.time()
-    print(timer)
+    time_taken = time.time() - timer
+    print(time_taken)
     return best_solution
 
-
-path_to_json(algo_genetique())
+if __name__ == "__main__":
+    path_to_json(algo_genetique(wall))

@@ -8,81 +8,15 @@
         },
         {
             "hleft": null,
-            "hright": null,
-            "lleft": 9,
+            "hright": 7,
+            "lleft": null,
             "lright": null
         },
         {
             "hleft": null,
-            "hright": null,
-            "lleft": 0,
+            "hright": 2,
+            "lleft": null,
             "lright": null
-        },
-        {
-            "hleft": null,
-            "hright": 0,
-            "lleft": 0,
-            "lright": null
-        },
-        {
-            "hleft": 0,
-            "hright": 0,
-            "lleft": 0,
-            "lright": null
-        },
-        {
-            "hleft": 9,
-            "hright": 0,
-            "lleft": 0,
-            "lright": null
-        },
-        {
-            "hleft": 9,
-            "hright": 0,
-            "lleft": 0,
-            "lright": null
-        },
-        {
-            "hleft": 9,
-            "hright": 0,
-            "lleft": 0,
-            "lright": null
-        },
-        {
-            "hleft": 9,
-            "hright": 0,
-            "lleft": 0,
-            "lright": 9
-        },
-        {
-            "hleft": 9,
-            "hright": 0,
-            "lleft": 0,
-            "lright": 5
-        },
-        {
-            "hleft": 5,
-            "hright": 0,
-            "lleft": 0,
-            "lright": 5
-        },
-        {
-            "hleft": 5,
-            "hright": 0,
-            "lleft": 0,
-            "lright": 5
-        },
-        {
-            "hleft": 5,
-            "hright": 1,
-            "lleft": 0,
-            "lright": 5
-        },
-        {
-            "hleft": 2,
-            "hright": 1,
-            "lleft": 0,
-            "lright": 5
         }
     ]
 }
