@@ -1,0 +1,64 @@
+{
+    "path": [
+        {
+            "hleft": null,
+            "hright": null,
+            "lleft" : null,
+            "lright" : null
+        },
+        {
+            "hleft": 3,
+            "hright": null,
+            "lleft" : null,
+            "lright" : null
+        }, 
+        {
+            "hleft": 3,
+            "hright": 4,
+            "lleft" : null,
+            "lright" : null
+        },
+        {
+            "hleft": 3,
+            "hright": 4,
+            "lleft" : null,
+            "lright" : null
+        },          
+        {
+            "hleft": 3,
+            "hright": 4,
+            "lleft" : 1,
+            "lright" : null
+        },
+        {
+            "hleft": 3,
+            "hright": 4,
+            "lleft" : 1,
+            "lright" : 2
+        },
+        {
+            "hleft": 5,
+            "hright": 6,
+            "lleft" : 1,
+            "lright" : 2
+        },
+        {
+            "hleft": 5,
+            "hright": 6,
+            "lleft" : 3,
+            "lright" : 2
+        },
+        {
+            "hleft": 5,
+            "hright": 6,
+            "lleft" : 3,
+            "lright" : 4
+        },
+        {
+            "hleft": 6,
+            "hright": 6,
+            "lleft" : 3,
+            "lright" : 4
+        }
+    ]
+}

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html> 
+  <head>
+    <title>Escalade {{ name }}</title> 
+    <link rel="stylesheet" href={{ url_for('static', filename= 'css/styles.css') }}>
+  </head>
+  <body>
+    <button id="exportPath" onclick="exportPathFile()">Exporter un chemin</button>
+    <button id="uploadPath" onclick="uploadPathFile()">Charger un chemin</button>
+    <button id="takePositionsButton" onclick="uploadPositionFile()">Importer mur</button>
+    <button id="createWallButton" onclick="createWall()">Créer mur d'escalade</button>
+    <button id="deleteButton" style="display: none;" onclick="deletePositionFile()">
+      <img src="trash_icon.png" alt="Delete" width="20" height="20">
+    </button>
+    <button id="exportButton"  onclick="exportPositionFile()">Exporter mur</button>
+    <canvas id="canvas"></canvas> 
+    <div>
+      <input type="range" id="dist" min="0" max="600" value="300"/>
+      <label for="dist">Distance max</label>
+    </div>
+    <label>Echelle</label>
+    <script src={{ url_for('static', filename= 'js/script.js') }} onload="alert('{{ wall }}')"></script>
+  </body>
+</html>
