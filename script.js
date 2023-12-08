@@ -473,10 +473,10 @@ function moveHuman(move) {
   for (let i = 0; i < 4; i++) {
     if (m[i] != null && m[i] != 0) {
       idCurrentMember = i;
-      ind = m[i] - 1;
+      ind = m[i];
       x = positionsCircles[ind].x;
       y = positionsCircles[ind].y;
-      if (checkContraints(x, y)) {
+      if (true || checkContraints(x, y)) {
         if (human[i].x != x || human[i].y != y) {
           human[i].x = x;
           human[i].y = y;
@@ -606,8 +606,8 @@ if (urlParams.has("path")) {
 async function getGeneticPath() {
   const url = "http://127.0.0.1:5000/api/data";
 
-  const jsonData = getPositionsCircles();
-  console.log(jsonData);
+  const jsonData = {"wall" : getPositionsCircles(), "wingspan" : parseInt(curseur.value) };
+  console.log(jsonData); 
   try {
     const response = await fetch(url, {
       method: "POST",
@@ -618,9 +618,7 @@ async function getGeneticPath() {
     });
 
     const data = await response.json();
-    console.log(data)
     const pathFile = data.path;
-    console.log(pathFile);
     let legal_move = true;
     pathFile.forEach(async (move, index) => {
       await delay(1000 * index);

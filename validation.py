@@ -148,9 +148,12 @@ def body_position(step,wall):
 
     return hleft_position, hright_position, lleft_position, lright_position
 
-
+def update_wingspan(new_wingspan):
+    global WINGSPAN
+    WINGSPAN = new_wingspan
 
 def valid_wingspans(positions,wall):
+
     for pos1, pos2 in combinations(positions, 2):
         if distance(pos1, pos2, wall) > WINGSPAN:
             return False

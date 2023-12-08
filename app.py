@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
-from validation import json_to_wall, path_to_json
+from validation import json_to_wall, path_to_json, update_wingspan
 from genetic import algo_genetique
 
 app = Flask(__name__)
@@ -11,12 +11,13 @@ CORS(app)  # Enable CORS for all routes
 def receive_data():
     try:
         json_data = request.get_json()
-
-
-        path = algo_genetique(json_data)
-        print(path)
+        wall = json_data['wall']
+       
+        wingspan = json_data['wingspan']
+        update_wingspan(wingspan)
+        path = algo_genetique(wall)
         response_data = {"path" : path}
-        print(response_data)
+
         return jsonify(response_data)
 
     except Exception as e:
