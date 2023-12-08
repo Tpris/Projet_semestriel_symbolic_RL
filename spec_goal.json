@@ -1,10 +1,3 @@
 {
-    "objectives" : 
-
-
-[
-    {"hleft" : "lastPosition"},
-    {"hright" : "lastPosition"}
-
-]
+  "objectives": [{ "hleft": "lastPosition" }, { "hright": "lastPosition" }]
 }

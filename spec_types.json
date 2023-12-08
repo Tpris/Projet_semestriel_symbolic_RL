@@ -1,20 +1,58 @@
 {
-    "types" :
+  "types": [
+    { "name": "wall", "type": "list", "itemType": "position" },
+    { "name": "position", "type": "record required [x y]" },
+    {
+      "name": "x ",
+      "type": "numeric",
+      "min": 0,
+      "max": "Width",
+      "precision": 1
+    },
+    {
+      "name": "y",
+      "type": "numeric",
+      "min": 0,
+      "max": "Height",
+      "precision": 1
+    },
 
-
-[
-    {"name": "wall"       , "type": "list itemType: position"},
-    {"name": "position "  , "type": "record required: [x y]"},
-    {"name": "x "         , "type": "numeric min:0 max:Width precision:1" },
-    {"name": "y"          , "type": "numeric min:0 max:Height precision:1" },
-
-    {"name": "path"       , "type": "list itemType: step" },
-    {"name": "step"       , "type": "record required: [hleft hright lleft lright]"},
-    {"name": "hleft"      , "type": "numeric or NaN min:0 max:len(wall) precision:1 "},
-    {"name": "hright"     , "type": "numeric or NaN min:0 max:len(wall) precision:1" },
-    {"name": "lleft"      , "type": "numeric or NaN min:0 max:len(wall) precision:1" },
-    {"name": "lright "    , "type": "numeric or NaN min:0 max:len(wall) precision:1" },
-    {"name": "lastPosition "    , "type": "numeric min:0 max:len(wall) precision:1" }
-
-]
+    { "name": "path", "type": "list", "itemType": "step" },
+    { "name": "step", "type": "record required: [hleft hright lleft lright]" },
+    {
+      "name": "hleft",
+      "type": "numeric or NaN",
+      "min": 0,
+      "max": "len(wall)-1",
+      "precision": 1
+    },
+    {
+      "name": "hright",
+      "type": "numeric or NaN",
+      "min": 0,
+      "max": "len(wall)-1",
+      "precision": 1
+    },
+    {
+      "name": "lleft",
+      "type": "numeric or NaN",
+      "min": 0,
+      "max": "len(wall)-1",
+      "precision": 1
+    },
+    {
+      "name": "lright ",
+      "type": "numeric or NaN",
+      "min": 0,
+      "max": "len(wall)-1",
+      "precision": 1
+    },
+    {
+      "name": "lastPosition ",
+      "type": "numeric",
+      "min": 0,
+      "max": "len(wall)-1",
+      "precision": 1
+    }
+  ]
 }
