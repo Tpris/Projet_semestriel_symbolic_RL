@@ -31,4 +31,3 @@ def receive_data():
 if __name__ == '__main__':
     app.run(debug=True)
 
->>>>>>> de993f34e1a081d49df0a62acd9b808a2e87561f
