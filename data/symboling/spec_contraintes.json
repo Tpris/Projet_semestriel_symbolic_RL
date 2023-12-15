@@ -1,14 +1,14 @@
 [
   {
     "name": "distance",
-    "constraint": "for m in member{distance(m,(m+2)%4)<DIST_MAX}"
+    "constraint": "distance(hleft,hright)<DIST_MAX && distance(hleft,lright)<DIST_MAX && distance(hleft,lleft)<DIST_MAX && distance(hright, lleft)<DIST_MAX && distance(hright, lright)<DIST_MAX && distance(lleft, lright)<DIST_MAX"
   },
   {
     "name": "HandsOnTop",
-    "constraint": "hleft.y and hright.y < lright.y and lleft.y "
+    "constraint": "hleft.y > lright.y && hleft.y > lleft.y && hright.y > lright.y && hright.y > lleft.y "
   },
   {
     "name": "LeftRightOrientation",
-    "constraint": "hleft.x and lleft.x < lright.x and hright.x "
+    "constraint": "hleft.x < hright.x && lleft.x < lright.x"
   }
 ]
