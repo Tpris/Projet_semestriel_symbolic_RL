@@ -88,10 +88,10 @@
     cursor: pointer;
   }
 
-  #symbolicPath {
+  #symbolingPath {
     position: fixed;
     top: 10px;
-    right: 975px;
+    right: 965px;
     float: left;
     background-color: #008CBA;
     color: white;
