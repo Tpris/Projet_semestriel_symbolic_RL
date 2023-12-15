@@ -3,7 +3,7 @@ pip install -r requirements.txt
 
 flask --app app run &> /dev/null
 
-xdg-open http://127.0.0.1:5000 &> /dev/null
+xdg-open index.html &> /dev/null
 
 sleep 10
 echo "\033[44m*** INSTRUCTIONS ***\033[m"
