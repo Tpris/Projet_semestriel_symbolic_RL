@@ -250,6 +250,7 @@ function renderWall() {
   drawLineDist();
   drawCircles();
   members = drawHuman();
+  document.getElementById('coord').innerHTML = 'X = '+human[4].x+' Y = '+human[4].y;
 }
 
 function drawCircles() {
