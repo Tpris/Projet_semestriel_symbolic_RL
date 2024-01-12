@@ -585,8 +585,11 @@ for (const [key, value] of urlParams) {
       human[4].x = data3.x;
       human[4].y = canvas.height - data3.y;
       break;
-    case "run":
-      console.log("ruuuuuuun");
+    case "runGenetic":
+      getGeneticPath();
+      break;
+    case "runSymboling":
+      getSymbolingPath();
       break;
   }
 }
@@ -634,3 +637,6 @@ async function getGeneticPath() {
   }
 }
 
+async function getSymbolingPath() {
+  alert("Not yet implemented");
+}
