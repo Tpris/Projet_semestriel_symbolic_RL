@@ -627,6 +627,8 @@ async function getGeneticPath() {
         legal_move = moveHuman(move);
       }
     });
+    await delay(1000 * pathFile.length);
+    exportPathFile()
   } catch (error) {
     console.error("Erreur lors de l'envoi des données:", error);
   }
