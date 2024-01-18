@@ -479,7 +479,6 @@ function moveHuman(move) {
       y = positionsCircles[ind].y;
       if (true || checkContraints(x, y)) {
         if (human[i].x != x || human[i].y != y) {
-          console.log("move " + i);
           human[i].x = x;
           human[i].y = y;
           centreDeGravite();
@@ -659,7 +658,6 @@ async function getAStarPath() {
     pathFile.forEach(async (move, index) => {
       await delay(1000 * index);
       if (legal_move) {
-        console.log(move)
         legal_move = moveHuman(move);
       }
     });
