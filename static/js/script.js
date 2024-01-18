@@ -637,6 +637,37 @@ async function getGeneticPath() {
   }
 }
 
+async function getAStarPath() {
+  const url = "http://127.0.0.1:5000/api/data2";
+
+  const jsonData = {"wall" : getPositionsCircles(), "wingspan" : parseInt(curseur.value) };
+  console.log(jsonData); 
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(jsonData),
+    });
+
+    const data = await response.json();
+    const pathFile = data.path;
+    let legal_move = true;
+    console.log(pathFile);
+    pathFile.forEach(async (move, index) => {
+      await delay(1000 * index);
+      if (legal_move) {
+        legal_move = moveHuman(move);
+      }
+    });
+    await delay(1000 * pathFile.length);
+    exportPathFile()
+  } catch (error) {
+    console.error("Erreur lors de l'envoi des données:", error);
+  }
+}
+
 async function getSymbolingPath() {
   alert("Not yet implemented");
 }

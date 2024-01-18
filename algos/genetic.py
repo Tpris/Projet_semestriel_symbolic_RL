@@ -124,8 +124,6 @@ def algo_genetique(wall):
     print(best_solution)
     time_taken = time.time() - timer
     print(time_taken)
-    print(wall)
     return best_solution
 
-if __name__ == "__main__":
-    path_to_json(algo_genetique(wall))
+

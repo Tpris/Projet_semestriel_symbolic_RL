@@ -59,6 +59,9 @@ def wall_to_json(wall):
 
 #wall = json_to_wall(WALL_FILE)
 
+def get_wingspan():
+    return WINGSPAN
+
 def valid_path(path,wall):
     if not valid_start(path):
         #print(f"The starting step of the path is not valid")
@@ -151,9 +154,9 @@ def body_position(step,wall):
 def update_wingspan(new_wingspan):
     global WINGSPAN
     WINGSPAN = new_wingspan
+    
 
 def valid_wingspans(positions,wall):
-
     for pos1, pos2 in combinations(positions, 2):
         if distance(pos1, pos2, wall) > WINGSPAN:
             return False
@@ -231,8 +234,6 @@ def legal_moves(step,wall):
             next_step[member] = i
             if valid_step(next_step,wall) and valid_step_transition([step,next_step],wall):
                 moves.append(next_step)
-    if moves == []:
-        print("The wingspan is probably to short for this wall")
     return moves
 
 
