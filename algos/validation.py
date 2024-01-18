@@ -164,18 +164,31 @@ def valid_wingspans(positions,wall):
 
 def valid_step_positions(step,wall):
     """Check if the position of the member of the body is valid (Hands above feet) """
-
     positions = body_position(step, wall)
 
+    if positions[2] and positions[3]:
+        if positions[2] == positions[3]:
+            return False
+    
     hleft_height = 0.1 if positions[0] is None else wall[positions[0]]['y']
     hright_height = 0.1 if positions[1] is None else wall[positions[1]]['y']
-    lleft_height = 0 if positions[2] is None else wall[positions[2]]['y']
-    lright_height = 0 if positions[3] is None else wall[positions[3]]['y']
+    lleft_height = 0.001 if positions[2] is None else wall[positions[2]]['y']
+    lright_height = 0.002 if positions[3] is None else wall[positions[3]]['y']
 
+   
+    
     highest_foot = max(lleft_height,lright_height)
     lowest_hand = min(hleft_height,hright_height)
-
-    return lowest_hand > highest_foot 
+    
+    if lowest_hand <= highest_foot:
+        return False
+    
+    hleft_x = 0 if positions[0] is None else wall[positions[0]]['x']
+    hright_x = 0 if positions[1] is None else wall[positions[1]]['x']
+    lleft_x = 0 if positions[2] is None else wall[positions[2]]['x']
+    lright_x = 0 if positions[3] is None else wall[positions[3]]['x']
+    
+    return (hleft_x <= hright_x) and (lleft_x <= lright_x)
 
 def valid_step_wingspan(step, wall):
     positions = body_position(step, wall)

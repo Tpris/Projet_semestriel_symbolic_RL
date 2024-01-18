@@ -472,13 +472,14 @@ function moveHuman(move) {
   m = [move.hleft, move.hright, move.lright, move.lleft];
 
   for (let i = 0; i < 4; i++) {
-    if (m[i] != null && m[i] != 0) {
+    if (m[i] != null) {
       idCurrentMember = i;
       ind = m[i];
       x = positionsCircles[ind].x;
       y = positionsCircles[ind].y;
       if (true || checkContraints(x, y)) {
         if (human[i].x != x || human[i].y != y) {
+          console.log("move " + i);
           human[i].x = x;
           human[i].y = y;
           centreDeGravite();
@@ -658,6 +659,7 @@ async function getAStarPath() {
     pathFile.forEach(async (move, index) => {
       await delay(1000 * index);
       if (legal_move) {
+        console.log(move)
         legal_move = moveHuman(move);
       }
     });
