@@ -1,5 +1,6 @@
 from algos.validation import *
 import time
+from codecarbon import EmissionsTracker
 POP_SIZE = 200
 NUM_PARENTS = 50
 MUTATION_PROBA = 0.2
@@ -103,6 +104,13 @@ def mutate(population, wall):
 
 
 def algo_genetique(wall):
+    # Create Carbon tracker
+    tracker = EmissionsTracker()
+    #if offline, it is possible to specify measurement specifications
+    #tracker = OfflineEmissionsTracker(country_iso_code='SGP', cloud_provider='gcp',  cloud_region='asia-southeast1', log_level='error')
+
+    tracker.start()
+
     timer = time.time()
     population = init_population(wall)
     population.sort(key=lambda x: fitness(x, wall))
@@ -124,6 +132,15 @@ def algo_genetique(wall):
     print(best_solution)
     time_taken = time.time() - timer
     print(time_taken)
+
+    emissions: float = tracker.stop()
+    print('-----------------------------------------------------')
+    print('Total CPU energy consumption CodeCarbon (Process): ' + str(tracker._total_cpu_energy.kWh*1000) + ' Wh')
+    print('Total RAM energy consumption CodeCarbon (Process): ' + str(tracker._total_ram_energy.kWh*1000) + ' Wh')
+    print('Total GPU energy consumption CodeCarbon (Process): ' + str(tracker._total_gpu_energy.kWh*1000) + ' Wh')
+    print('Total Energy consumption CodeCarbon (Process): ' + str(tracker._total_energy.kWh*1000) + ' Wh')
+    print('Emissions by CodeCarbon (Process): '+ str(emissions*1000) + ' gCO2e')
+    
     return best_solution
 
 
