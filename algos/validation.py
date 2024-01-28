@@ -8,7 +8,7 @@ MAX_LENGTH = 20
 PATH_FILE = None
 WALL_FILE = None
 OUTPUT_ID = "out"
-WINGSPAN = 3000
+WINGSPAN = 275
 
 
 def json_to_path(file):
@@ -231,7 +231,7 @@ def valid_step_transition(path,wall):
 # print(valid_path(path,wall))
 
 def is_winning_step(step,wall):
-    return step['hleft'] == len(wall) and step['hright'] == len(wall)
+    return step['hleft'] == len(wall)-1 and step['hright'] == len(wall)-1
 
 def is_winning_path(path,wall):
     return valid_path(path,wall) and is_winning_step(path[-1],wall)
