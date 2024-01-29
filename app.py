@@ -4,6 +4,7 @@ from flask_cors import CORS
 from algos.validation import json_to_wall, path_to_json, update_wingspan
 from algos.genetic import algo_genetique
 from algos.Astar import Astar_solve_wall
+from algos.Qlearning import perform_Q_policy, update_Q
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
@@ -35,6 +36,23 @@ def receive_data2():
         print(path)
         response_data = {"path" : path}
         print(response_data)
+        return jsonify(response_data)
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+    
+@app.route('/api/data3', methods=['POST'])
+def receive_data3():
+    try:
+        json_data = request.get_json()
+        wall = json_data['wall']
+       
+        wingspan = json_data['wingspan']
+        update_wingspan(wingspan)
+        update_Q()
+        path = perform_Q_policy(wall)
+        response_data = {"path" : path}
+
         return jsonify(response_data)
 
     except Exception as e:
