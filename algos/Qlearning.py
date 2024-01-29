@@ -1,5 +1,5 @@
 import numpy as np
-from validation import *
+from algos.validation import *
 
 wall = json_to_wall("./data/wall/wall_test.json")
 
@@ -8,60 +8,25 @@ Nb_handhold = len(wall)
 
 def state_to_index(state):
     a = state["hleft"]
-    if a == None :
-        a = 0
-    else :
-        a = a+1
 
     b = state["hright"]
-    if b == None :
-        b = 0
-    else :
-        b = b+1
+    
 
     c = state["lleft"]
-    if c == None :
-        c = 0
-    else :
-        c = c+1
+   
 
     d = state["lright"]
-    if d == None :
-        d = 0
-    else :
-        d = d+1
+    
 
-    numerical_representation = a + 10 * b + 100 * c + 1000 * d
+    numerical_representation = (a,b,c,d)
     return numerical_representation
 
 def index_to_action(action_index):
-    d = action_index // 1000
-    c = (action_index - d * 1000 ) // 100 
-    b = (action_index - d * 1000 - c * 100) // 10 
-    a = (action_index - d * 1000 - c * 100 - b * 10) 
-
-    
-    if a == 0 :
-        a = None
-    else :
-        a = a-1
-
-    if b == 0 :
-        b = None
-    else :
-        b = b-1
-
-
-    if c == 0 :
-        c = None
-    else :
-        c = c-1
-
-
-    if d == 0 :
-        d = None
-    else :
-        d = d-1
+ 
+    a = action_index[0]
+    b = action_index[1]
+    c = action_index[2]
+    d = action_index[3]
 
     limb_movement = {"hleft": a,"hright": b,"lleft" : c, "lright" : d}
 
@@ -132,14 +97,15 @@ def choose_action(state):
         chosen_action = max(legal_actions, key=lambda action: Q[state_to_index(state)][action])
     else:
         # Exploration: Choose a random action
-        chosen_action = np.random.choice(list(Q[state_to_index(state)].keys()))
+        k = np.random.randint(0, len(Q[state_to_index(state)]))
+        chosen_action = list(Q[state_to_index(state)].keys())[k]
 
     return chosen_action
 
 
 # Main Q-learning loop
-def Q_learning():
-    num_episodes = 100000  # You can adjust the number of episodes
+def Q_learning(wall):
+    num_episodes = 10000  # You can adjust the number of episodes
     max_steps_per_episode = 30  # Add a termination condition based on the maximum number of steps
 
     for episode in range(num_episodes):
@@ -171,7 +137,7 @@ def Q_learning():
             current_state = next_state
 
             # Check for termination conditions (you may need to customize this)
-            if is_winning_step(current_state,wall):
+            if is_winning_step(current_state, wall):
                 break
 
             step += 1
@@ -183,7 +149,9 @@ def Q_learning():
 def perform_Q_policy(wall):
     Nb_handhold = len(wall)
     calculate_total_states(initial_state,wall)
-    Q_learning()
+   
+    Q_learning(wall)
+    print("azkdkdka")
     path = [initial_state]
     counter = 0
     print(len(wall))
@@ -206,7 +174,6 @@ def perform_Q_policy(wall):
     print("Final Path:", is_winning_path(path, wall),path)
     return path
 
-
-perform_Q_policy(Q, wall)
+# perform_Q_policy(wall)
 
 
