@@ -540,7 +540,7 @@ function uploadPathFile() {
  * @param {*} move 
  * @returns True if the move is done and respect constraints
  */
-function moveHuman(move) {
+function moveHuman(move, debug = true) {
   m = [move.hleft, move.hright, move.lright, move.lleft];
 
   for (let i = 0; i < 4; i++) {
@@ -549,7 +549,7 @@ function moveHuman(move) {
       ind = m[i];
       x = positionsCircles[ind].x;
       y = positionsCircles[ind].y;
-      if (true || checkContraints(x, y)) {
+      if (debug || checkContraints(x, y)) {
         if (human[i].x != x || human[i].y != y) {
           human[i].x = x;
           human[i].y = y;
