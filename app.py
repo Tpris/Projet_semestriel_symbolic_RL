@@ -62,7 +62,7 @@ def receive_data3():
 def index():
     wall = request.args.get('wall')
     path = request.form.get('path', default=[])
-    return render_template('index.html', wall=wall, name="toto")
+    return render_template('index.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

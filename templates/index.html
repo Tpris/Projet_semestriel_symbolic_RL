@@ -5,6 +5,9 @@
     <link rel="stylesheet" href={{ url_for('static', filename= 'css/styles.css') }}>
   </head>
   <body>
+    <button id="QPath" onclick="getQPath()">Chemin Qlearning</button>
+    <button id="geneticPath" onclick="getGeneticPath()">Chemin génétique</button>
+    <button id="aStarPath" onclick="getAStarPath()">Chemin A*</button>
     <button id="exportPath" onclick="exportPathFile()">Exporter un chemin</button>
     <button id="uploadPath" onclick="uploadPathFile()">Charger un chemin</button>
     <button id="takePositionsButton" onclick="uploadPositionFile()">Importer mur</button>
@@ -13,12 +16,14 @@
       <img src="trash_icon.png" alt="Delete" width="20" height="20">
     </button>
     <button id="exportButton"  onclick="exportPositionFile()">Exporter mur</button>
+    <button id="symbolingPath" onclick="getSymbolingPath()">Chemin symboling</button>
     <canvas id="canvas"></canvas> 
     <div>
       <input type="range" id="dist" min="0" max="600" value="300"/>
       <label for="dist">Distance max</label>
     </div>
     <label>Echelle</label>
-    <script src={{ url_for('static', filename= 'js/script.js') }} onload="alert('{{ wall }}')"></script>
+    <label id="coord"></label>
+    <script src={{ url_for('static', filename= 'js/script.js') }}></script>
   </body>
 </html>
