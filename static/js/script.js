@@ -8,6 +8,9 @@ canvas.style.position = "absolute";
 canvas.style.top = 50 + "px";
 canvas.style.left = 0 + "px";
 
+/**
+ * Draw the scale of the maximum distance between limbs 
+ */
 function drawLineDist() {
   ctx.beginPath();
   ctx.moveTo(10, 10);
@@ -45,7 +48,10 @@ let human = [
 ];
 
 let body;
-
+/**
+ * Draw the climber
+ * @return the members of type Path2D
+ */
 function drawHuman() {
   linkMembers();
   ctx.fillStyle = "red";
@@ -64,7 +70,6 @@ function drawHuman() {
   }
 
   // show symetry
-
   hand = new Path2D();
   hand.ellipse(
     human[0].x + 5,
@@ -86,17 +91,17 @@ function drawHuman() {
     (-40 * Math.PI) / 180,
     0,
     2 * Math.PI
-  );
-  ctx.fill(hand);
-
+    );
+    ctx.fill(hand);
+    
   feet = new Path2D();
   feet.ellipse(human[2].x + 16, human[2].y, 5, 8, 0, 0, 2 * Math.PI);
   ctx.fill(feet);
-
+  
   feet = new Path2D();
   feet.ellipse(human[3].x - 16, human[3].y, 5, 8, 0, 0, 2 * Math.PI);
   ctx.fill(feet);
-
+  
   // body
   body = new Path2D();
   body.ellipse(human[4].x, human[4].y, 25, 30, 0, 0, 2 * Math.PI);
@@ -107,6 +112,19 @@ function drawHuman() {
   ctx.fillStyle = "blue";
   return members;
 }
+
+/**
+ * Draw the lines of the limbs
+ */
+function linkMembers() {
+  for (let i = 0; i < 4; i++) {
+    ctx.beginPath();
+    ctx.moveTo(human[i].x, human[i].y);
+    ctx.lineTo(human[4].x, human[4].y);
+    ctx.stroke();
+  }
+}
+
 let members = drawHuman();
 
 let circles = [];
@@ -114,6 +132,10 @@ let circles = [];
 let jsonFileUploaded = false;
 let positionsCircles = [];
 
+/**
+ * Get the handholds positions
+ * @returns the wall with handholds positions
+ */
 function getPositionsCircles() {
   indexFinal = circles.indexOf(finalCircle);
   const wall = positionsCircles
@@ -129,6 +151,9 @@ function getPositionsCircles() {
   return wall;
 }
 
+/**
+ * Export the wall in JSON file
+ */
 function exportPositionFile() {
   const wall = getPositionsCircles();
   console.log(wall);
@@ -149,6 +174,9 @@ function exportPositionFile() {
   URL.revokeObjectURL(url);
 }
 
+/**
+ * Import a wall from JSON file
+ */
 function uploadPositionFile() {
   positionsCircles = [];
   const input = document.createElement("input");
@@ -174,12 +202,18 @@ function uploadPositionFile() {
   input.click();
 }
 
+/**
+ * Remove the wall uploaded
+ */
 function deletePositionFile() {
   document.getElementById("deleteButton").style.display = "none";
   jsonFileUploaded = false;
   createWall();
 }
 
+/**
+ * Create a wall
+ */
 function createWall() {
   historyCanvas = [];
   historyHumanPositions = [
@@ -201,22 +235,19 @@ function createWall() {
       positionsCircles.push(new pos(x, y));
     }
   }
-  // positionsCircles.sort( compare );
   renderWall();
 }
 
 createWall();
 
-function linkMembers() {
-  for (let i = 0; i < 4; i++) {
-    ctx.beginPath();
-    ctx.moveTo(human[i].x, human[i].y);
-    ctx.lineTo(human[4].x, human[4].y);
-    ctx.stroke();
-  }
-}
 
-// Create circle
+/**
+ * Crete a Path2D circle
+ * @param {*} x 
+ * @param {*} y 
+ * @param {*} final 
+ * @returns the Path2D circle
+ */
 function createCircle(x, y, final = false) {
   let circle = new Path2D();
   circle.arc(x, y, 10, 0, 2 * Math.PI);
@@ -244,6 +275,9 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min) + min); // The maximum is exclusive and the minimum is inclusive
 }
 
+/**
+ * Draw all the canvas elements
+ */
 function renderWall() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   circles = [];
@@ -253,6 +287,9 @@ function renderWall() {
   document.getElementById('coord').innerHTML = 'X = '+human[4].x+' Y = '+human[4].y;
 }
 
+/**
+ * Draw the handholds
+ */
 function drawCircles() {
   positionsCircles.forEach((position, index) => {
     final = index == positionsCircles.length - 1;
@@ -267,6 +304,7 @@ canvas.addEventListener("mousedown", function (event) {
   circles.forEach((circle, index) => {
     // Check whether point is inside circle
     if (ctx.isPointInPath(circle, event.offsetX, event.offsetY)) {
+      // If ctrl-click remove handhold
       if (event.button === 1 || (event.button === 0 && event.ctrlKey)) {
         deleteCircle = true;
         if (circle == finalCircle) {
@@ -277,11 +315,14 @@ canvas.addEventListener("mousedown", function (event) {
         renderWall();
         return;
       }
+
+      // Get the current circle id to move
       idCurrentCircle = circles.indexOf(circle);
       moved = true;
     }
   });
 
+  // Check if the body is going to move 
   if (ctx.isPointInPath(body, event.offsetX, event.offsetY)) {
     moved = true;
     isBody = true;
@@ -298,6 +339,7 @@ canvas.addEventListener("mousedown", function (event) {
 });
 
 canvas.onmousemove = function (event) {
+  // Move the body
   if (isBody) {
     if (historyHumanPositions.length == 1) {
       x_gap = human[4].x - event.offsetX;
@@ -310,6 +352,7 @@ canvas.onmousemove = function (event) {
     human[4].x = event.offsetX;
     human[4].y = event.offsetY;
     renderWall();
+  // Move the handholds
   } else if (moved && idCurrentCircle != null) {
     positionsCircles[idCurrentCircle].x = event.offsetX;
     positionsCircles[idCurrentCircle].y = event.offsetY;
@@ -318,12 +361,14 @@ canvas.onmousemove = function (event) {
 };
 
 canvas.onmouseup = function (event) {
+  // move come to an end
   moved = false;
   isBody = false;
 };
 
 canvas.addEventListener("click", function (event) {
   let found = false;
+  // select a member to climb
   for (const m of members) {
     if (ctx.isPointInPath(m, event.offsetX, event.offsetY)) {
       selected = !selected;
@@ -331,6 +376,8 @@ canvas.addEventListener("click", function (event) {
       idCurrentMember = members.indexOf(m);
     }
   }
+
+  // select the handhold and move the member over it
   if (!found && selected) {
     for (const circle of circles) {
       if (ctx.isPointInPath(circle, event.offsetX, event.offsetY)) {
@@ -339,6 +386,7 @@ canvas.addEventListener("click", function (event) {
           human[idCurrentMember].y = event.offsetY;
           centreDeGravite();
           indCircle = circles.indexOf(circle);
+          // used for to upload the path
           addToHistoryPositions(indCircle, idCurrentMember);
           addToCanvasHistory();
 
@@ -355,12 +403,24 @@ canvas.addEventListener("click", function (event) {
   renderWall();
 });
 
+/**
+ * Check the move constraints
+ * @param {*} x position desired
+ * @param {*} y position desired
+ * @returns True if the move is legal
+ */
 function checkContraints(x, y) {
   return (
     checkDistance(x, y) && checkHandsOnTop(y) && checkLeftRightOrientation(x)
   );
 }
 
+/**
+ * CHeck if the distance is under the limit
+ * @param {*} x 
+ * @param {*} y 
+ * @returns 
+ */
 function checkDistance(x, y) {
   const adjacent = (idCurrentMember + 2) % 4;
   const a = distanceBody(human[adjacent].x, human[adjacent].y);
@@ -368,6 +428,11 @@ function checkDistance(x, y) {
   return a + b < parseInt(curseur.value);
 }
 
+/**
+ * Check the up/down constraint
+ * @param {*} y 
+ * @returns 
+ */
 function checkHandsOnTop(y) {
   const hand = idCurrentMember == 0 || idCurrentMember == 1;
   if (hand) {
@@ -376,6 +441,11 @@ function checkHandsOnTop(y) {
   return y > human[0].y && y > human[1].y;
 }
 
+/**
+ * Check the left/right constraint
+ * @param {*} x 
+ * @returns 
+ */
 function checkLeftRightOrientation(x) {
   const left = idCurrentMember == 0 || idCurrentMember == 3;
   if (left) {
@@ -384,6 +454,10 @@ function checkLeftRightOrientation(x) {
   return x > human[0].x && x > human[3].x;
 }
 
+/**
+ * Check if hands are on the final handhold
+ * @returns 
+ */
 function checkWin() {
   let lhand = human[0];
   let rhand = human[1];
@@ -402,6 +476,12 @@ function distanceCalculation(x1, x2, y1, y2) {
   return Math.sqrt(x * x + y * y);
 }
 
+/**
+ * Get the distance with the body
+ * @param {*} x 
+ * @param {*} y 
+ * @returns 
+ */
 function distanceBody(x, y) {
   return distanceCalculation(x, human[4].x, y, human[4].y);
 }
@@ -410,25 +490,6 @@ curseur.addEventListener("change", function (e) {
   renderWall();
 });
 
-function intersection() {
-  let Denom =
-    (human[0].x - human[2].x) * (human[1].y - human[3].y) -
-    (human[0].y - human[2].y) * (human[1].x - human[3].x);
-  if (Denom != 0) {
-    let xNum =
-      (human[0].x * human[2].y - human[0].y * human[2].x) *
-        (human[1].x - human[3].x) -
-      (human[0].x - human[2].x) *
-        (human[1].x * human[3].y - human[1].y * human[3].x);
-    let yNum =
-      (human[0].x * human[2].y - human[0].y * human[2].x) *
-        (human[1].y - human[3].y) -
-      (human[0].y - human[2].y) *
-        (human[1].x * human[3].y - human[1].y * human[3].x);
-    human[4].x = xNum / Denom;
-    human[4].y = yNum / Denom;
-  }
-}
 
 function centreSegment(x1, x2, y1, y2) {
   let xi = (x1 + x2) / 2;
@@ -436,6 +497,9 @@ function centreSegment(x1, x2, y1, y2) {
   return [xi, yi];
 }
 
+/**
+ * Calculating the centre of gravity for the body
+ */
 function centreDeGravite() {
   c1 = centreSegment(human[0].x, human[1].x, human[0].y, human[1].y);
   c2 = centreSegment(human[2].x, human[3].x, human[2].y, human[3].y);
@@ -444,6 +508,9 @@ function centreDeGravite() {
   human[4].y = gravite[1];
 }
 
+/**
+ * Upload a path file in JSON format and apply mouvements
+ */
 function uploadPathFile() {
   const input = document.createElement("input");
   input.type = "file";
@@ -468,6 +535,11 @@ function uploadPathFile() {
   input.click();
 }
 
+/**
+ * Move the climber depending on a move
+ * @param {*} move 
+ * @returns True if the move is done and respect constraints
+ */
 function moveHuman(move) {
   m = [move.hleft, move.hright, move.lright, move.lleft];
 
@@ -508,6 +580,9 @@ function compare(a, b) {
   return 0;
 }
 
+/**
+ * Export path file in JSON and download images canvas
+ */
 function exportPathFile() {
   path = historyHumanPositions;
   const jsonData = JSON.stringify({ path });
@@ -526,6 +601,11 @@ function exportPathFile() {
   }
 }
 
+/**
+ * Add a move done in the history
+ * @param {*} idCircle 
+ * @param {*} idMember 
+ */
 function addToHistoryPositions(idCircle, idMember) {
   nameMember = ["hleft", "hright", "lright", "lleft"];
   const last = historyHumanPositions.slice(-1)[0];
@@ -534,10 +614,17 @@ function addToHistoryPositions(idCircle, idMember) {
   historyHumanPositions.push(copy);
 }
 
+/**
+ * Add the canvas image to the history
+ */
 function addToCanvasHistory() {
   historyCanvas.push(canvas.toDataURL());
 }
 
+/**
+ * Download one image
+ * @param {*} url 
+ */
 function exportUniqueImage(url) {
   let a = document.createElement("a");
   a.href = url;
@@ -545,6 +632,9 @@ function exportUniqueImage(url) {
   a.click();
 }
 
+/**
+ * Download each image of the canvas history
+ */
 function downloadAllCanvas() {
   for (c of historyCanvas) {
     exportUniqueImage(c);
