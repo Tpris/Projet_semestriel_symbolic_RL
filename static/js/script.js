@@ -650,6 +650,7 @@ function downloadAllCanvas() {
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 
+// Apply GET requests
 for (const [key, value] of urlParams) {
   switch (key) {
     case "wall":
@@ -684,6 +685,7 @@ for (const [key, value] of urlParams) {
   }
 }
 
+// Apply GET path request
 if (urlParams.has("path")) {
   const value = urlParams.get("path");
   const data2 = JSON.parse(value);
@@ -697,6 +699,9 @@ if (urlParams.has("path")) {
   });
 }
 
+/**
+ * Apply genetic alogrithm
+ */
 async function getGeneticPath() {
   const url = "http://127.0.0.1:5000/api/data";
 
@@ -727,6 +732,9 @@ async function getGeneticPath() {
   }
 }
 
+/**
+ * Apply genetic alogrithm
+ */
 async function getAStarPath() {
   const url = "http://127.0.0.1:5000/api/data2";
 
@@ -758,13 +766,13 @@ async function getAStarPath() {
   }
 }
 
-async function getSymbolingPath() {
-  alert("Not yet implemented");
-}
 
+/**
+ * Apply genetic alogrithm
+*/
 async function getQPath() {
   const url = "http://127.0.0.1:5000/api/data3";
-
+  
   const jsonData = {"wall" : getPositionsCircles(), "wingspan" : parseInt(curseur.value) };
   console.log(jsonData); 
   try {
@@ -793,6 +801,9 @@ async function getQPath() {
   }
 }
 
+/**
+ * Apply symboling algorithm
+ */
 async function getSymbolingPath() {
   alert("Not yet implemented");
 }
