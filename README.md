@@ -10,7 +10,7 @@ pip install -r requirements.txt
 
 ## Launch
 
-Open `index.html` and enter the command :
+Open `index.html` or `http://127.0.0.1:5000` and enter the command :
 ```
 flask --app app run
 ```
