@@ -1,5 +1,6 @@
 import numpy as np
 from algos.validation import *
+from codecarbon import EmissionsTracker
 
 wall = json_to_wall("./data/wall/wall_test.json")
 
@@ -147,6 +148,14 @@ def Q_learning(wall):
 
 
 def perform_Q_policy(wall):
+    # Create Carbon tracker
+    tracker = EmissionsTracker()
+    #if offline, it is possible to specify measurement specifications
+    #tracker = OfflineEmissionsTracker(country_iso_code='SGP', cloud_provider='gcp',  cloud_region='asia-southeast1', log_level='error')
+
+    tracker.start()
+
+
     Nb_handhold = len(wall)
     calculate_total_states(initial_state,wall)
    
@@ -172,6 +181,14 @@ def perform_Q_policy(wall):
             break
 
     print("Final Path:", is_winning_path(path, wall),path)
+
+    emissions: float = tracker.stop()
+    print('-----------------------------------------------------')
+    print('Total CPU energy consumption CodeCarbon (Process): ' + str(tracker._total_cpu_energy.kWh*1000) + ' Wh')
+    print('Total RAM energy consumption CodeCarbon (Process): ' + str(tracker._total_ram_energy.kWh*1000) + ' Wh')
+    print('Total GPU energy consumption CodeCarbon (Process): ' + str(tracker._total_gpu_energy.kWh*1000) + ' Wh')
+    print('Total Energy consumption CodeCarbon (Process): ' + str(tracker._total_energy.kWh*1000) + ' Wh')
+    print('Emissions by CodeCarbon (Process): '+ str(emissions*1000) + ' gCO2e')
     return path
 
 # perform_Q_policy(wall)
